@@ -7,15 +7,15 @@
 
 Выбранная серия: **Быстрое чтение Windows**.
 
-**NEXT: B — UI Automation в ограниченном по времени процессе** (in_progress).
+**NEXT: C — OCR, настройки, мини-плеер, документация, сборка** (in_progress).
 
 [Решения](workstreams/quick-read/README.md) · [Состояние](workstreams/quick-read/state.json) · [Журнал](workstreams/quick-read/log.md)
 
-Выполняет: codex; ветка feat/quick-read; с 2026-10-29T09:27:41.605Z.
+Выполняет: codex; ветка feat/quick-read; с 2026-10-29T09:32:46.090Z.
 
-Последний завершённый шаг серии: **A — PCM Quick Read, буфер, горячие клавиши, пауза и отмена**.
+Последний завершённый шаг серии: **B — UI Automation в ограниченном по времени процессе**.
 
-Проверка 2026-10-29T09:27:41.605Z: 353 passed; 0 failed; 6 ignored; fmt/clippy exit 0 ([evidence](../docs/workstreams/quick-read/log.md)).
+Проверка 2026-10-29T09:32:46.090Z: 354 passed; 0 failed; 6 ignored; Windows clippy/fmt exit 0 ([evidence](../docs/workstreams/quick-read/log.md)).
 
 ## Доставка и наблюдения
 

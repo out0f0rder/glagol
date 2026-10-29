@@ -1,7 +1,7 @@
 //! Ephemeral speech: extraction, shared Silero inference and bounded PCM output.
 pub mod player;
 pub mod shortcuts;
-mod sources;
+pub mod sources;
 pub mod text;
 use crate::{db::repository, preferences::Language, state::AppState, tts::silero::models::Models};
 use player::{Buffer, Snapshot};
@@ -106,10 +106,13 @@ pub fn request(app: &tauri::AppHandle, source: &str) {
     let app = app.clone();
     let source = source.to_string();
     tauri::async_runtime::spawn(async move {
-        match sources::extract(&source)
-            .await
-            .and_then(|s| text::chunks(&s))
-        {
+        let q = app.state::<QuickRead>();
+        let mut changes = q.changes.subscribe();
+        if !q.current(id) {
+            return;
+        }
+        let extracted = tokio::select! { biased; _=changes.changed()=>return, result=sources::extract(&source)=>result };
+        match extracted.and_then(|s| text::chunks(&s)) {
             Ok(chunks) => {
                 let q = app.state::<QuickRead>();
                 if !q.current(id) {
