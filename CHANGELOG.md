@@ -11,6 +11,10 @@ the per-session master logs under [`docs/day-logs/`](docs/day-logs/).
 
 ## [Unreleased]
 
+### Fixed
+
+- Quick Read uses physical pointer coordinates before Tauri starts, so UI Automation follows the pointer on scaled displays. Cold UIA providers have more time within the same three-second process timeout. / Быстрое чтение получает физические координаты указателя ещё до запуска Tauri: UI Automation правильно находит элемент при масштабировании экрана. Холодному UIA-провайдеру дано больше времени в пределах того же трёхсекундного таймаута процесса.
+
 ### Added
 
 - Quick Read for Windows: selection, Unicode clipboard, UI Automation under the pointer and local Windows OCR area capture. / Быстрое чтение Windows: выделение, Unicode-буфер, UI Automation под курсором и локальный OCR области.

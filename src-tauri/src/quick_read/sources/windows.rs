@@ -5,7 +5,11 @@ use windows::{
     Win32::{
         Foundation::{HANDLE, HGLOBAL, POINT},
         System::{Com::*, Threading::*},
-        UI::{Accessibility::*, WindowsAndMessaging::GetCursorPos},
+        UI::{
+            Accessibility::*,
+            HiDpi::{SetThreadDpiAwarenessContext, DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2},
+            WindowsAndMessaging::GetPhysicalCursorPos,
+        },
     },
 };
 const LIMIT: i32 = 500_000;
@@ -159,6 +163,11 @@ pub fn extract(source: &str) -> Result<String, String> {
     if source == "clipboard" {
         return clipboard();
     }
+    // SAFETY: this helper owns its windowless thread. UIA consumes physical pixels;
+    // configure this thread before COM. The child exits before Tauri initialization.
+    unsafe {
+        SetThreadDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
+    }
     // SAFETY: fresh child main thread, initialized exactly once as MTA; RAII uninitializes.
     unsafe {
         CoInitializeEx(None, COINIT_MULTITHREADED)
@@ -171,18 +180,18 @@ pub fn extract(source: &str) -> Result<String, String> {
         let automation: IUIAutomation =
             CoCreateInstance(&CUIAutomation8, None, CLSCTX_INPROC_SERVER).map_err(|_| "UIA")?;
         if let Ok(timeouts) = automation.cast::<IUIAutomation2>() {
-            let _ = timeouts.SetConnectionTimeout(200);
-            let _ = timeouts.SetTransactionTimeout(500);
+            let _ = timeouts.SetConnectionTimeout(500);
+            let _ = timeouts.SetTransactionTimeout(1000);
         }
         let walker = automation.ControlViewWalker().map_err(|_| "UIA")?;
         let mut point = POINT::default();
         let element = if source == "selection" {
             automation.GetFocusedElement()
         } else {
-            GetCursorPos(&mut point).map_err(|_| "cursor")?;
+            GetPhysicalCursorPos(&mut point).map_err(|_| "cursor")?;
             automation.ElementFromPoint(point)
         }
-        .map_err(|_| "element")?;
+        .map_err(|e| format!("element:{:08X}", e.code().0 as u32))?;
         if protected(&element, &walker) {
             return Err("protected".into());
         }

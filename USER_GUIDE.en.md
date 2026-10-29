@@ -129,7 +129,8 @@ Selection requires the application's UI Automation support. No automatic Ctrl+C
 fallback is used: when selection is unavailable, copy explicitly and use
 Ctrl+Alt+V. Clipboard formats and the user's selection are never modified by
 Quick Read. Password controls are excluded; protected/elevated applications may
-be inaccessible. UIA extraction has a three-second timeout; Glagol cannot
+be inaccessible. Pointer lookup uses physical screen coordinates on scaled displays.
+UIA extraction has a three-second timeout; Glagol cannot
 provide text that an application does not expose.
 
 OCR is local Windows.Media.Ocr. Choose **Русский / English** in Quick Read
