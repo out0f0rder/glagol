@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "observed_at": "2026-10-09T09:12:55.000Z",
-  "active_workstream": "self-update",
+  "observed_at": "2026-10-29T09:16:39.283Z",
+  "active_workstream": "quick-read",
   "links": [
     "AGENTS.md",
     "CLAUDE.md",

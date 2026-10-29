@@ -1,6 +1,6 @@
 """Glagol's offline Silero adapter (MIT); model code remains in its NC package.
 
-One bounded JSON request per line. Only metadata uses stdout; PCM stays on disk.
+One bounded JSON request per line. Metadata plus explicitly requested bounded binary PCM use private stdout.
 The parent selects all paths. No hub, HTTP service, pip or runtime downloads.
 """
 import ctypes
@@ -134,19 +134,36 @@ def main():
             if not re.search("[a-zA-Z]" if language == "en" else "[а-яёА-ЯЁ]", normalized):
                 emit({"empty": True})
                 continue
-            with wave.open(str(output), "wb") as writer:
-                writer.setnchannels(1)
-                writer.setsampwidth(2)
-                writer.setframerate(24000)
+            memory = request.get("pcm", False)
+            frames = bytearray()
+            writer = None if memory else wave.open(str(output), "wb")
+            try:
+                if writer:
+                    writer.setnchannels(1)
+                    writer.setsampwidth(2)
+                    writer.setframerate(24000)
                 for segment in segments(normalized):
                     with torch.inference_mode():
                         options = {} if language == "en" else {"put_accent": True, "put_yo": True}
                         audio = model.apply_tts(text=segment, speaker=voice, sample_rate=24000, **options)
-                    if not torch.isfinite(audio).all() or audio.numel() > 24000 * 300:
+                    if not torch.isfinite(audio).all() or audio.numel() > 24000 * (120 if memory else 300):
                         raise ValueError("audio_limit")
-                    pcm = (audio.clamp(-1, 1) * 32767).round().to(torch.int16).cpu().numpy().astype("<i2")
-                    writer.writeframes(pcm.tobytes())
-            emit({"ok": True})
+                    pcm = (audio.clamp(-1, 1) * 32767).round().to(torch.int16).cpu().numpy().astype("<i2").tobytes()
+                    if memory:
+                        if len(frames) + len(pcm) > 24000 * 120 * 2:
+                            raise ValueError("audio_limit")
+                        frames.extend(pcm)
+                    else:
+                        writer.writeframes(pcm)
+            finally:
+                if writer:
+                    writer.close()
+            if memory:
+                emit({"pcm_bytes": len(frames)})
+                PROTOCOL.buffer.write(frames)
+                PROTOCOL.buffer.flush()
+            else:
+                emit({"ok": True})
         except Exception:
             output.unlink(missing_ok=True)
             emit({"error": "synthesis_failed"})

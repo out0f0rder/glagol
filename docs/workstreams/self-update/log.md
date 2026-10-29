@@ -114,3 +114,7 @@ release:assets: 82c127f467a22eadd17be8ac87601c8f547df1afaa792470c4cda9405ae2c618
 10263535 байт. После сборки `git status -sb` чистый — .gitattributes устранил
 CRLF-изменения Cargo.toml. Документация: docs/releases/v0.6.1.md, README, обе
 USER_GUIDE, USER_GUIDE.md.
+
+## 2026-10-29T09:16:39.283Z — передача контекста Quick Read
+
+Рабочее дерево main 8c59250 чистое, последние commits включают merge 0.6.1. Старый claim claude от 2026-10-09 не соответствует текущей ветке. Пользователь поручил новую серию Quick Read; U3 возвращён pending, серия paused, claim очищен. Ручная установка обновления 0.6.1 сейчас не проверялась. Продолжение U3 — фактическая проверка на Windows.

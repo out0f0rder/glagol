@@ -23,6 +23,7 @@ use cpal::traits::{DeviceTrait, HostTrait};
 use reqwest::{Client, Proxy};
 use rusqlite::Connection;
 use serde::Serialize;
+use tauri::Manager;
 use tauri_plugin_global_shortcut::{GlobalShortcutExt, Shortcut};
 
 use crate::db::repository;
@@ -723,6 +724,18 @@ pub async fn set_dictation_hotkey(
             // Guard drops before the register/unregister below.
         };
 
+        let parsed = crate::quick_read::shortcuts::validate(&hotkey)?;
+        if app
+            .state::<crate::quick_read::QuickRead>()
+            .shortcuts
+            .lock()
+            .unwrap()
+            .registered
+            .values()
+            .any(|s| *s == parsed)
+        {
+            return Err("Это сочетание используется быстрым чтением.".into());
+        }
         let registrar = AppHotkeyRegistrar { app: &app };
         set_dictation_hotkey_impl(&state, &registrar, &old, &hotkey, updated_at)
     })

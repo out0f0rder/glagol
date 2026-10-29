@@ -95,6 +95,38 @@ impl Worker {
         );
         Ok(worker)
     }
+    /// Synthesize using the same model/protocol, returning bounded mono PCM without files.
+    pub async fn synthesize_pcm(&mut self, text: &str, voice: &str) -> Result<Vec<i16>, String> {
+        if self.cancel.load(Ordering::Relaxed) {
+            return Err("Озвучка отменена.".into());
+        }
+        let request = serde_json::json!({"text":text,"voice":voice,"pcm":true}).to_string() + "\n";
+        self.input
+            .write_all(request.as_bytes())
+            .await
+            .map_err(|_| "Движок озвучки завершился.".to_string())?;
+        self.input.flush().await.map_err(|e| e.to_string())?;
+        let response = self.response().await?;
+        self.last_used = Instant::now();
+        if response["empty"] == true {
+            return Ok(Vec::new());
+        }
+        let bytes = response["pcm_bytes"]
+            .as_u64()
+            .filter(|n| *n <= 5_760_000 && n % 2 == 0)
+            .ok_or("Некорректный ответ движка озвучки.")? as usize;
+        let mut pcm = vec![0; bytes];
+        tokio::time::timeout(Duration::from_secs(5), self.output.read_exact(&mut pcm))
+            .await
+            .map_err(|_| "PCM timeout".to_string())?
+            .map_err(|_| "PCM truncated".to_string())?;
+        Ok(pcm
+            .as_chunks::<2>()
+            .0
+            .iter()
+            .map(|v| i16::from_le_bytes([v[0], v[1]]))
+            .collect())
+    }
     pub async fn shutdown(&mut self) {
         let _ = self.child.kill().await;
     }

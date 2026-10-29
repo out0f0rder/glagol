@@ -2,6 +2,7 @@ use tauri::{Emitter, Manager, WindowEvent};
 use tauri_plugin_global_shortcut::GlobalShortcutExt;
 
 // Optional local TTS; separate from dictation.
+pub mod quick_read;
 pub mod tts;
 
 // Speech-to-text (STT) client for the Dictation feature (Sprint 6).
@@ -120,8 +121,15 @@ pub fn run() {
         // (D3/D4). Registered from Rust in `setup`; the webview binds nothing.
         .plugin(
             tauri_plugin_global_shortcut::Builder::new()
-                .with_handler(|app, _shortcut, event| {
-                    dictation::session::handle_shortcut(app, event.state);
+                .with_handler(|app, shortcut, event| {
+                    if quick_read::shortcuts::dispatch(app, shortcut, event.state) {
+                        return;
+                    }
+                    let state = app.state::<state::AppState>();
+                    let expected = commands::dictation::startup_hotkey(&state.db.lock().unwrap());
+                    if *shortcut == expected {
+                        dictation::session::handle_shortcut(app, event.state);
+                    }
                 })
                 .build(),
         )
@@ -160,6 +168,7 @@ pub fn run() {
             );
 
             app.manage(state::AppState::new(conn, recorder));
+            app.manage(quick_read::QuickRead::default());
             app.manage(std::sync::Arc::new(stt::local::LocalModels::new(
                 paths::local_models_root(app.handle())?,
             )));
@@ -217,6 +226,8 @@ pub fn run() {
                 tracing::warn!("failed to register dictation hotkey {hotkey:?}: {e}");
             }
 
+            quick_read::setup(app.handle())?;
+
             // Close-to-tray (D12): intercept the main window's close so the
             // hotkey keeps working after the user "closes" the window.
             if let Some(main) = app.get_webview_window("main") {
@@ -232,6 +243,9 @@ pub fn run() {
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
+            quick_read::quick_read_action,
+            quick_read::quick_read_state,
+            quick_read::quick_read_speed,
             commands::updates::get_update_settings,
             commands::updates::set_update_auto_check,
             commands::updates::mark_update_reminder_shown,
@@ -290,6 +304,7 @@ pub fn run() {
             // Drain and stop the recorder thread on exit so it is not left as a
             // detached zombie (D2/lib.rs). Best-effort — the process is leaving.
             if let tauri::RunEvent::Exit = event {
+                app_handle.state::<quick_read::QuickRead>().shutdown();
                 app_handle.state::<state::AppState>().recorder.shutdown();
                 let models = app_handle.state::<tts::silero::models::Models>();
                 models.ru.stop();

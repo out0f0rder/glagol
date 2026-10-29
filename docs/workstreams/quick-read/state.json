@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "id": "quick-read",
+  "title": "Быстрое чтение Windows",
+  "status": "active",
+  "next": "B",
+  "reason": null,
+  "claim": {
+    "owner": "codex",
+    "at": "2026-10-29T09:27:41.605Z",
+    "branch": "feat/quick-read"
+  },
+  "links": [
+    "docs/workstreams/quick-read/README.md",
+    "docs/workstreams/quick-read/log.md"
+  ],
+  "steps": [
+    {
+      "id": "A",
+      "title": "PCM Quick Read, буфер, горячие клавиши, пауза и отмена",
+      "status": "done",
+      "depends_on": [],
+      "required": [
+        "rust",
+        "frontend"
+      ],
+      "checks": [
+        {
+          "id": "rust",
+          "status": "PASS",
+          "method": "command",
+          "command": "cargo fmt --manifest-path src-tauri/Cargo.toml --check; cargo clippy --manifest-path src-tauri/Cargo.toml --all-targets -- -D warnings; cargo test --manifest-path src-tauri/Cargo.toml",
+          "cwd": ".",
+          "at": "2026-10-29T09:27:41.605Z",
+          "environment": {
+            "runtime": "Windows 11 host via WSL interop; isolated Rust/MSVC 1.99.1"
+          },
+          "exit_code": 0,
+          "output": "353 passed; 0 failed; 6 ignored; fmt/clippy exit 0",
+          "evidence": "docs/workstreams/quick-read/log.md"
+        },
+        {
+          "id": "frontend",
+          "status": "PASS",
+          "method": "command",
+          "command": "pnpm exec tsc --noEmit; pnpm build",
+          "cwd": ".",
+          "at": "2026-10-29T09:27:41.605Z",
+          "environment": {
+            "runtime": "WSL Linux; Node v24.13.0; pnpm 12.16.1"
+          },
+          "exit_code": 0,
+          "output": "TypeScript exit 0; built in 45.84s",
+          "evidence": "docs/workstreams/quick-read/log.md"
+        }
+      ]
+    },
+    {
+      "id": "B",
+      "title": "UI Automation в ограниченном по времени процессе",
+      "status": "in_progress",
+      "depends_on": [
+        "A"
+      ],
+      "required": [
+        "rust",
+        "frontend"
+      ],
+      "checks": []
+    },
+    {
+      "id": "C",
+      "title": "OCR, настройки, мини-плеер, документация, сборка",
+      "status": "pending",
+      "depends_on": [
+        "B"
+      ],
+      "required": [
+        "rust",
+        "frontend"
+      ],
+      "checks": []
+    }
+  ]
+}
