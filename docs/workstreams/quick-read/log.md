@@ -54,3 +54,7 @@ Release helper smoke: powershell.exe -NoProfile -ExecutionPolicy Bypass -File .s
 Попытка scripted WPF fixture: powershell.exe -NoProfile -STA -ExecutionPolicy Bypass -File .scratch/windows-integration.ps1 — exit 1, Interactive fixture could not become foreground. Защитная проверка остановила сценарий ДО вызова source helper; UIA selection/pointer/password, clipboard sequence и OCR fixture не выполнялись. Это ограничение интерактивной сессии, не PASS и не доказанный дефект приложения. Никаких текстов/снимков/clipboard contents в evidence; фокус/курсор восстанавливались в finally, защиты foreground не обходились. Полная ручная матрица остаётся NOT_RUN.
 
 C завершён по автоматическим гейтам и NSIS. NEXT W: ручная приёмка Windows 11 с настоящим звуком/горячими клавишами/браузерами/overlay/DPI/offline и регрессией диктовки/трея. Claim очищен; установка, push, PR, merge и публикация не выполнялись и не входят в текущую доставку.
+
+## 2026-10-29T10:06:57.471Z — сохранение доставки
+
+Три feature commits сохранены в feat/quick-read; код сборки — структурированная ссылка quick-read-implementation (scope local) в docs/context/project.json. Git status после feature commit чистый. .scratch/quick-read-dist/build.json содержит source_commit и границы проверки; установщик и SHA256SUMS.txt доступны локально, в Git не добавляются. Последующие изменения только контекста связывают сборку с commit, приложение повторно не пересобиралось. NEXT W pending/manual, claim null.

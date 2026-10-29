@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "observed_at": "2026-10-29T10:02:54.110Z",
+  "observed_at": "2026-10-29T10:06:57.471Z",
   "active_workstream": "quick-read",
   "links": [
     "AGENTS.md",
@@ -191,6 +191,11 @@
     {
       "id": "quick-read-uia",
       "sha": "5f330b4",
+      "scope": "local"
+    },
+    {
+      "id": "quick-read-implementation",
+      "sha": "b4e32a6c3210bde4f1fa5d25f477c0f54b50cfbd",
       "scope": "local"
     }
   ]
