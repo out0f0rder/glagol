@@ -1,10 +1,11 @@
 //! Killable extraction process: an unresponsive external COM/clipboard owner cannot
 //! strand a thread in the app. No synthetic keys, clipboard writes or focus changes.
 #[cfg(windows)]
+mod ocr;
+#[cfg(windows)]
 mod windows;
 #[cfg(windows)]
 use std::process::Stdio;
-#[cfg(windows)]
 use std::time::Duration;
 #[cfg(windows)]
 use tokio::{
@@ -18,9 +19,13 @@ pub async fn extract(source: &str) -> Result<String, String> {
     if !matches!(source, "clipboard" | "selection" | "pointer") {
         return Err("Unknown source".into());
     }
+    run(source, &[], Duration::from_secs(3)).await
+}
+/// Private stdout only; source arguments contain geometry/language, never speech text.
+pub async fn run(source: &str, args: &[String], timeout: Duration) -> Result<String, String> {
     #[cfg(not(windows))]
     {
-        let _ = source;
+        let _ = (source, args, timeout);
         Err(super::message(
             "Quick Read extraction requires Windows.",
             "Извлечение текста Quick Read требует Windows.",
@@ -35,6 +40,7 @@ pub async fn extract(source: &str) -> Result<String, String> {
                 source,
                 &std::process::id().to_string(),
             ])
+            .args(args)
             .creation_flags(0x08000000);
         command
             .stdin(Stdio::null())
@@ -47,13 +53,16 @@ pub async fn extract(source: &str) -> Result<String, String> {
                 "Не удалось запустить извлечение текста.",
             )
         })?;
-        let result = bounded_output(&mut child, Duration::from_secs(3)).await;
+        let result = bounded_output(&mut child, timeout).await;
         let _ = child.kill().await;
         let _ = child.wait().await;
         let bytes = result?;
         let result: Result<String, String> = serde_json::from_slice(&bytes)
             .map_err(|_| super::message("Text extraction failed.", "Не удалось извлечь текст."))?;
         result.map_err(|code| match code.as_str() {
+            "ocr_language"=>super::message("The selected OCR language is not installed. Install its Windows OCR language component or select another language in Quick Read settings.","Выбранный язык OCR не установлен. Установите языковой компонент OCR Windows либо выберите другой язык в настройках быстрого чтения."),
+            "ocr_size"=>super::message("The OCR region is too large. Select a smaller region.","Область OCR слишком большая. Выберите меньшую область."),
+            "ocr_unavailable"|"capture"=>super::message("Windows OCR or screen capture is unavailable.","Windows OCR или захват экрана недоступен."),
             "protected" => super::message(
                 "Protected controls cannot be read.",
                 "Защищённые поля не читаются.",
@@ -98,14 +107,20 @@ pub fn child_entry() -> Option<i32> {
     }
     #[cfg(windows)]
     {
-        if args.len() != 4 {
+        if args.len() < 4 {
             return Some(2);
         }
-        let parent = args[3].parse::<u32>().ok()?;
+        let Ok(parent) = args[3].parse::<u32>() else {
+            return Some(2);
+        };
         if !windows::watch_parent(parent) {
             return Some(2);
         }
-        let result = windows::extract(&args[2]);
+        let result = if args[2] == "ocr" {
+            ocr::recognize(&args[4..])
+        } else {
+            windows::extract(&args[2])
+        };
         use std::io::Write;
         let bytes = serde_json::to_vec(&result).ok()?;
         let _ = std::io::stdout().write_all(&bytes);

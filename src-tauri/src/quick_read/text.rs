@@ -40,7 +40,10 @@ pub fn chunks(input: &str) -> Result<Vec<String>, String> {
     for (i, c) in clean.char_indices() {
         let end = i + c.len_utf8();
         let next = clean[end..].chars().next();
-        let token = clean[start..end].split_whitespace().last().unwrap_or("");
+        if !matches!(c, '.' | '!' | '?' | '…') || !next.is_none_or(char::is_whitespace) {
+            continue;
+        }
+        let token = clean[..end].split_whitespace().next_back().unwrap_or("");
         let abbreviation = c == '.'
             && (token.chars().filter(|c| c.is_alphabetic()).count() == 1
                 || [
@@ -82,6 +85,17 @@ mod tests {
                 .len(),
             3
         );
+    }
+    #[test]
+    fn long_unbroken_input_and_many_initials_remain_bounded() {
+        let result = chunks(&"я".repeat(100_000)).unwrap();
+        assert_eq!(
+            result.iter().map(|s| s.chars().count()).sum::<usize>(),
+            100_000
+        );
+        assert!(result.iter().all(|s| s.chars().count() <= 200));
+        let result = chunks(&"А. ".repeat(10_000)).unwrap();
+        assert!(result.iter().all(|s| s.chars().count() <= 200));
     }
     #[test]
     fn unicode_long_text_is_bounded_and_ordered() {

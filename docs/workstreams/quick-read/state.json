@@ -3,13 +3,9 @@
   "id": "quick-read",
   "title": "Быстрое чтение Windows",
   "status": "active",
-  "next": "C",
+  "next": "W",
   "reason": null,
-  "claim": {
-    "owner": "codex",
-    "at": "2026-10-29T09:32:46.090Z",
-    "branch": "feat/quick-read"
-  },
+  "claim": null,
   "links": [
     "docs/workstreams/quick-read/README.md",
     "docs/workstreams/quick-read/log.md"
@@ -100,15 +96,130 @@
     {
       "id": "C",
       "title": "OCR, настройки, мини-плеер, документация, сборка",
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "B"
       ],
       "required": [
         "rust",
-        "frontend"
+        "frontend",
+        "native",
+        "nsis",
+        "context"
       ],
-      "checks": []
+      "checks": [
+        {
+          "id": "rust",
+          "status": "PASS",
+          "method": "command",
+          "command": "cargo fmt --manifest-path src-tauri/Cargo.toml --check; cargo clippy --manifest-path src-tauri/Cargo.toml --all-targets -- -D warnings; cargo test --manifest-path src-tauri/Cargo.toml",
+          "cwd": ".",
+          "at": "2026-10-29T10:02:54.110Z",
+          "environment": {
+            "runtime": "Windows build 10.0.26200.9711; Rust 1.99.1"
+          },
+          "exit_code": 0,
+          "output": "359 passed; 0 failed; 7 ignored; fmt/clippy exit 0",
+          "evidence": "docs/workstreams/quick-read/log.md"
+        },
+        {
+          "id": "frontend",
+          "status": "PASS",
+          "method": "command",
+          "command": "pnpm exec tsc --noEmit; pnpm build",
+          "cwd": ".",
+          "at": "2026-10-29T10:02:54.110Z",
+          "environment": {
+            "runtime": "WSL; Node v24.13.0; pnpm 12.16.1"
+          },
+          "exit_code": 0,
+          "output": "TypeScript exit 0; I18N 278 keys; Vite built in 2m55s",
+          "evidence": "docs/workstreams/quick-read/log.md"
+        },
+        {
+          "id": "native",
+          "status": "PASS",
+          "method": "command",
+          "command": "cmd.exe /c .scratch/native-smoke.cmd; cmd.exe /c .scratch/english-smoke.cmd; .scratch/quick-read-native/runtime/python.exe -I -B scripts/silero/test_worker.py",
+          "cwd": ".",
+          "at": "2026-10-29T10:02:54.110Z",
+          "environment": {
+            "runtime": "Windows build 10.0.26200.9711; Rust 1.99.1"
+          },
+          "exit_code": 0,
+          "output": "RU PCM/WAV/cancel/recovery 1 passed; EN regression 1 passed; Python 7 tests OK",
+          "evidence": "docs/workstreams/quick-read/log.md"
+        },
+        {
+          "id": "nsis",
+          "status": "PASS",
+          "method": "command",
+          "command": "node .scratch/tauri-windows.cjs build --config .scratch/build-context.json",
+          "cwd": ".",
+          "at": "2026-10-29T10:02:54.110Z",
+          "environment": {
+            "runtime": "Windows build 10.0.26200.9711; Node v22.23.1; Rust 1.99.1; Tauri CLI 2.11.1"
+          },
+          "exit_code": 0,
+          "output": "Finished 1 bundle; 10360418 bytes; SHA-256 13d70da29057376384a75dd3d90abaf8470c22157719a0287c6ab5e3eb64c827",
+          "evidence": "docs/workstreams/quick-read/log.md"
+        },
+        {
+          "id": "context",
+          "status": "PASS",
+          "method": "command",
+          "command": "pnpm runbook:test; pnpm i18n:test; pnpm runbook:check",
+          "cwd": ".",
+          "at": "2026-10-29T10:02:54.110Z",
+          "environment": {
+            "runtime": "WSL outside sandbox for child-process tests; Node v24.13.0; pnpm 12.16.1"
+          },
+          "exit_code": 0,
+          "output": "49 runbook tests; 3 i18n tests; runbook-check OK (14 series)",
+          "evidence": "docs/workstreams/quick-read/log.md"
+        }
+      ]
+    },
+    {
+      "id": "W",
+      "title": "Ручная приёмка Windows 11: GUI, звук, hotkeys, DPI и offline",
+      "status": "pending",
+      "depends_on": [
+        "C"
+      ],
+      "required": [
+        "manual-windows"
+      ],
+      "checks": [
+        {
+          "id": "fixture",
+          "status": "FAIL",
+          "method": "command",
+          "command": "powershell.exe -NoProfile -STA -ExecutionPolicy Bypass -File .scratch/windows-integration.ps1",
+          "cwd": ".",
+          "at": "2026-10-29T10:02:54.110Z",
+          "environment": {
+            "runtime": "Windows build 10.0.26200.9711; Rust 1.99.1"
+          },
+          "exit_code": 1,
+          "output": "Interactive fixture could not become foreground; aborted before extraction; UIA/OCR NOT_RUN",
+          "evidence": "docs/workstreams/quick-read/log.md"
+        },
+        {
+          "id": "manual-windows",
+          "status": "NOT_RUN",
+          "method": "manual",
+          "command": "Выполнить docs/workstreams/quick-read/manual-qa.md на Windows 11",
+          "cwd": ".",
+          "at": "2026-10-29T10:02:54.110Z",
+          "environment": {
+            "runtime": "Windows build 10.0.26200.9711; Rust 1.99.1"
+          },
+          "exit_code": null,
+          "output": "NOT_RUN: настоящие браузеры/редакторы, звук и задержка, hotkeys/overlay/DPI/несколько мониторов/offline/регрессия не проверены",
+          "evidence": "docs/workstreams/quick-read/log.md"
+        }
+      ]
     }
   ]
 }

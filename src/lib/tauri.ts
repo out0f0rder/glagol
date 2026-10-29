@@ -554,3 +554,22 @@ export async function installUpdate(onProgress: (event: UpdateProgress) => void)
 }
 
 export { Channel };
+
+export type QuickReadAction = "selection" | "clipboard" | "pointer" | "ocr" | "pause" | "stop" | "previous" | "next";
+export interface QuickReadState {
+  generation: number; phase: "idle" | "extracting" | "preparing" | "playing";
+  current: number; total: number; paused: boolean; speed: number; error: string | null;
+}
+export interface QuickReadSettings {
+  shortcuts: Record<string, string>; show_player: boolean; ocr_language: "ru-RU" | "en-US"; registration_errors: string[];
+}
+export interface QuickReadRegion { generation: number; x: number; y: number; width: number; height: number; scale: number }
+export const quickReadAction = (action: QuickReadAction) => invoke<void>("quick_read_action", { action });
+export const getQuickReadState = () => invoke<QuickReadState>("quick_read_state");
+export const getQuickReadSettings = () => invoke<QuickReadSettings>("quick_read_settings");
+export const setQuickReadShortcut = (action: string, shortcut: string) => invoke<void>("quick_read_set_shortcut", { action, shortcut });
+export const setQuickReadOption = (key: "player" | "ocr_language", value: string) => invoke<void>("quick_read_set_option", { key, value });
+export const setQuickReadSpeed = (speed: number) => invoke<void>("quick_read_speed", { speed });
+export const getQuickReadRegion = () => invoke<QuickReadRegion | null>("quick_read_region");
+export const cancelQuickReadOcr = () => invoke<void>("quick_read_ocr_cancel");
+export const finishQuickReadOcr = (generation: number, selection: {x1: number; y1: number; x2: number; y2: number}) => invoke<void>("quick_read_ocr_finish", { generation, selection });

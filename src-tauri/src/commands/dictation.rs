@@ -712,6 +712,8 @@ pub async fn set_dictation_hotkey(
     hotkey: String,
 ) -> Result<(), String> {
     (async {
+        let q = app.state::<crate::quick_read::QuickRead>();
+        let _gate = q.hotkey_gate.lock().await;
         let updated_at = chrono::Utc::now().timestamp_millis();
         let old = {
             let conn = state
@@ -776,8 +778,8 @@ pub(crate) trait HotkeyRegistrar {
 }
 
 /// Production registrar backed by the global-shortcut plugin.
-struct AppHotkeyRegistrar<'a> {
-    app: &'a tauri::AppHandle,
+pub(crate) struct AppHotkeyRegistrar<'a> {
+    pub(crate) app: &'a tauri::AppHandle,
 }
 
 impl HotkeyRegistrar for AppHotkeyRegistrar<'_> {

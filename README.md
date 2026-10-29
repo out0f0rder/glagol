@@ -48,6 +48,52 @@ local dictation. Upgrades retain modes, server addresses, credentials and voices
   Library, rename, localized player, 0.5–2× playback, WAV export and backups.
   Existing recordings and their metadata remain usable.
 
+### Quick Read (local development build)
+
+Quick Read is new in the source tree and is **not included in the linked v0.6.1 release**.
+Install and acknowledge the optional Silero component, choose Russian or English
+and its voice in Settings → Local text to speech, then leave Glagol running in the
+tray. Settings → Quick Read changes shortcuts, OCR language and the optional
+mini-player (off by default).
+
+| Action | Default shortcut |
+|---|---|
+| Read selection | Ctrl+Alt+R |
+| Read clipboard | Ctrl+Alt+V |
+| Read element under pointer | Ctrl+Alt+E |
+| Select screen area and read with OCR | Ctrl+Alt+O |
+| Pause / resume | Ctrl+Alt+P |
+| Stop | Ctrl+Alt+S |
+
+Reading starts after the first sentence fragment is synthesized, while later
+fragments are prepared in a queue of at most two. PCM stays in memory; no WAV or
+library entry is created. A new request replaces the previous reading. Pause
+retains prepared audio. The mini-player adds previous/next fragment and 0.5–2×
+speed; changing speed also changes pitch. Long sentences can span several
+fragments; jumping synthesizes the target again. Errors appear briefly without
+opening the main window. A cold Silero worker still needs time to load.
+
+Selection requires the application's UI Automation support. No automatic Ctrl+C
+fallback is used: when selection is unavailable, copy explicitly and use
+Ctrl+Alt+V. Clipboard formats and the user's selection are never modified by
+Quick Read. Password controls are excluded; protected/elevated applications may
+be inaccessible. UIA extraction has a three-second timeout; Glagol cannot
+provide text that an application does not expose.
+
+OCR is local Windows.Media.Ocr. Choose **Русский / English** in Quick Read
+settings and install that Windows OCR language component; a missing component
+produces an error, with no silent language substitution. Drag a rectangle on
+the monitor under the pointer; Escape cancels. DPI is converted to physical
+pixels, including monitors with negative origins. A region is limited to one
+monitor, 4096 pixels per side and 16 megapixels. OCR takes at most 15 seconds.
+No cloud service, screenshot file or text log is created. Silero and its licence
+requirements are the same as document synthesis; no new download occurs while
+reading. Another active TTS setup/document operation is reported as busy.
+
+Build and unit tests do not establish GUI, OCR accuracy, audio quality or measured
+hotkey-to-sound latency. Windows 11 acceptance scenarios are tracked in
+[manual QA](docs/workstreams/quick-read/manual-qa.md).
+
 ### Install only the components you need
 
 One compact installer, with English/Russian installation and removal. The language
@@ -133,6 +179,53 @@ the development machine; importing pinned files was exercised separately.
 - Текст или TXT/MD/DOCX/PDF; последовательная озвучка длинных документов в WAV.
   Библиотека, переименование, локализованный плеер, скорость 0.5–2×, экспорт и бэкапы.
   Старые записи и метаданные остаются доступны.
+
+### Быстрое чтение (локальная сборка разработки)
+
+Быстрое чтение добавлено в исходники и **не входит в опубликованный v0.6.1 по ссылке выше**.
+Установите необязательный Silero, подтвердите его условия, выберите русский или
+английский язык и голос в «Настройки» → «Локальная озвучка», затем оставьте Глагол
+в трее. «Настройки» → «Быстрое чтение» меняет сочетания, язык OCR и необязательный
+мини-плеер (по умолчанию выключен).
+
+| Действие | По умолчанию |
+|---|---|
+| Прочитать выделение | Ctrl+Alt+R |
+| Прочитать буфер обмена | Ctrl+Alt+V |
+| Прочитать элемент под курсором | Ctrl+Alt+E |
+| Выделить область и прочитать через OCR | Ctrl+Alt+O |
+| Пауза / продолжение | Ctrl+Alt+P |
+| Остановка | Ctrl+Alt+S |
+
+Чтение начинается после синтеза первого фрагмента предложения; следующие
+готовятся в очереди максимум из двух. PCM остаётся в памяти; WAV и запись в
+библиотеке не создаются. Новый запрос заменяет прежнее чтение. Пауза сохраняет
+подготовленное аудио. В мини-плеере доступны предыдущий/следующий фрагмент и
+скорость 0,5–2×; изменение скорости меняет и высоту голоса. Длинное предложение
+может занимать несколько фрагментов; переход синтезирует целевой фрагмент заново.
+Ошибки появляются ненадолго без открытия главного окна. Холодному движку Silero
+нужно время на загрузку.
+
+Выделение требует поддержки UI Automation самим приложением. Автоматического
+Ctrl+C нет: при недоступном выделении скопируйте текст явно и нажмите Ctrl+Alt+V.
+Быстрое чтение не меняет форматы буфера и выделение пользователя. Поля паролей
+исключены; защищённые/повышенные приложения могут быть недоступны. На извлечение
+UIA отведены три секунды; Глагол не может получить текст, который приложение не
+предоставляет.
+
+OCR локальный, через Windows.Media.Ocr. Выберите **Русский / English** в настройках
+быстрого чтения и установите соответствующий компонент OCR Windows; отсутствие
+компонента даёт ошибку без молчаливой подмены языка. Выделите прямоугольник на
+мониторе под курсором; Escape отменяет. DPI переводится в физические пиксели,
+учитываются мониторы с отрицательными координатами. Область ограничена одним
+монитором, 4096 пикселями по стороне и 16 мегапикселями. OCR занимает не более
+15 секунд. Нет облака, файлов снимков и логирования текста. Silero и его условия
+те же, что у озвучки документов; при чтении ничего не скачивается. Другая активная
+операция установки/озвучки сообщается как занятая.
+
+Сборка и unit-тесты не доказывают GUI, точность OCR, качество звука и измеренную
+задержку от горячей клавиши. Сценарии приёмки Windows 11 — в
+[ручной QA](docs/workstreams/quick-read/manual-qa.md).
 
 ### Только нужные компоненты
 

@@ -18,6 +18,7 @@ CC BY-NC-SA 4.0 для некоммерческого использования
 | `components/settings/DictationSection.tsx` | Local/server/cloud STT, модели и ключи |
 | `components/settings/TtsSection.tsx` | Лицензия, скачивание/импорт, восстановление, удаление, голоса |
 | `components/settings/UpdatesSection.tsx`, `lib/updates.ts` | Версия, ручная проверка, автопроверка при запуске, установка подписанного обновления |
+| `components/settings/QuickReadSection.tsx`, `components/quick-read` | Шесть сочетаний, язык OCR, мини-плеер и рамка области; отдельные webview без главного окна |
 | `contexts/TtsContext.tsx` | Только локальное состояние TTS; без сети/OAuth при старте |
 | `lib/tauri.ts`, `lib/tts.ts` | Типизированные IPC-команды |
 | `lib/voices.ts` | Пять RU / четыре EN голоса Silero и прежние имена библиотеки |
@@ -32,6 +33,7 @@ CC BY-NC-SA 4.0 для некоммерческого использования
 | `state.rs` | SQLite и диктовка; TTS имеет отдельное состояние |
 | `preferences.rs`, `commands/preferences.rs` | Миграция старых неявных настроек, UI/STT/TTS языки, голоса, onboarding |
 | `i18n` | Native messages на IPC/event границе; пользовательские аргументы сохраняются |
+| `quick_read` | Генерации/отмена, предложения, bounded cpal PCM, настройки и non-activating player; Windows UIA/clipboard/OCR в killable child |
 | `commands/synthesize.rs` | Общий последовательный pipeline, временный WAV, транзакция |
 | `tts/mod.rs` | TtsBackend: provider, voices, limits, WAV result, cancellation |
 | `tts/silero/mod.rs` | Установка, consent, состояние и время жизни worker |
@@ -56,6 +58,14 @@ CC BY-NC-SA 4.0 для некоммерческого использования
 | `paths.rs` | Единый источник путей |
 
 ## Потоки и данные
+
+Quick Read: глобальная команда → UIA/буфер (3 с) либо рамка на мониторе + GDI/WinRT
+OCR (15 с) → консервативная Unicode нормализация → предложения/фрагменты 200 chars →
+общий Silero worker (binary PCM mode) → bounded очередь 2 → cpal callback. Без WAV,
+SQLite-документов и frontend audio IPC. Отмена заменяет generation и очищает PCM;
+пароль/неизвестная защита отклоняются. Буфер не меняется, Ctrl+C не эмулируется.
+
+
 
 Озвучка: UI → проверка условий → проверка runtime/model → скрытый worker →
 фрагменты PCM mono 24 кГц → временный WAV → запись документа и публикация файла.

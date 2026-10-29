@@ -28,7 +28,10 @@ pub fn setup(app: &tauri::AppHandle) -> Result<(), String> {
         let raw = repository::get_setting(&db, &format!("quick_read_{action}"))
             .map_err(|e| e.to_string())?
             .unwrap_or(default.into());
-        let shortcut = validate(&raw)?;
+        let Ok(shortcut) = validate(&raw) else {
+            bindings.errors.push(format!("{action}: {raw}"));
+            continue;
+        };
         if shortcut == dictation
             || bindings.registered.values().any(|s| *s == shortcut)
             || app.global_shortcut().register(shortcut).is_err()

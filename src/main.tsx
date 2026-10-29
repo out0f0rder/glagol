@@ -4,6 +4,8 @@ import { BrowserRouter } from "react-router-dom";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 
 import App from "./App";
+import { MiniPlayer } from "@/components/quick-read/MiniPlayer";
+import { OcrOverlay } from "@/components/quick-read/OcrOverlay";
 import { OverlayPill } from "@/components/dictation/OverlayPill";
 import { TtsProvider } from "@/contexts/TtsContext";
 import { PreferencesProvider } from "@/contexts/PreferencesContext";
@@ -19,7 +21,11 @@ const windowLabel = getCurrentWindow().label;
 const isOverlay = windowLabel === "overlay" || windowLabel.startsWith("overlay-");
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
 
-if (isOverlay) {
+if (windowLabel === "quick-player" || windowLabel === "quick-ocr") {
+  document.documentElement.style.background = "transparent";
+  document.body.style.background = "transparent";
+  root.render(<React.StrictMode><PreferencesProvider overlay>{windowLabel === "quick-player" ? <MiniPlayer /> : <OcrOverlay />}</PreferencesProvider></React.StrictMode>);
+} else if (isOverlay) {
   // The overlay window is transparent (D6); clear any page background the app
   // stylesheet sets so only the dark pill is visible.
   document.documentElement.style.background = "transparent";

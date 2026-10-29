@@ -26,6 +26,15 @@ def emit(payload):
     PROTOCOL.flush()
 
 
+def emit_pcm(frames):
+    # One sentence cannot allocate or emit unbounded audio. Validate before header.
+    if len(frames) > 24000 * 120 * 2 or len(frames) % 2:
+        raise ValueError("audio_limit")
+    emit({"pcm_bytes": len(frames)})
+    PROTOCOL.buffer.write(frames)
+    PROTOCOL.buffer.flush()
+
+
 def watch_parent(pid):
     if sys.platform != "win32":
         return
@@ -159,9 +168,7 @@ def main():
                 if writer:
                     writer.close()
             if memory:
-                emit({"pcm_bytes": len(frames)})
-                PROTOCOL.buffer.write(frames)
-                PROTOCOL.buffer.flush()
+                emit_pcm(frames)
             else:
                 emit({"ok": True})
         except Exception:

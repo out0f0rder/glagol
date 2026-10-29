@@ -29,7 +29,7 @@
 | Markdown | **pulldown-cmark** | Fast CommonMark parser |
 | Audio (WAV) | **hound** (synthesis-side) + manual streaming (concat-side) | Simple, predictable; streaming WAV header normalization established in Sprint 1 PR #13 |
 | Async runtime | **tokio** | Tauri default, mature |
-| Audio playback | HTML5 `<audio>` via Tauri asset protocol | Streaming, range requests, no full-file IPC roundtrip |
+| Audio playback | Library: HTML5 `<audio>` via Tauri asset protocol; Quick Read: cpal PCM | File streaming for library; bounded in-memory offline speech |
 
 **Do NOT introduce these without discussion:**
 - Electron (we chose Tauri specifically for bundle size)
@@ -37,7 +37,7 @@
 - Redux / MobX or another global state library
 - Material-UI / Ant Design (we use shadcn/ui)
 - Stronghold (this project uses keyring-rs)
-- Tesseract / OCR libraries (out of scope for MVP)
+- Tesseract / third-party OCR libraries (Quick Read uses built-in Windows.Media.Ocr)
 - `tauri-plugin-sql` (was original plan, replaced with rusqlite in Sprint 2 — see PR #15 logical for rationale)
 
 ## Repository layout (0.5.0)
@@ -154,3 +154,11 @@ These constraints apply to changes. Resolve required architectural changes befor
 - [Historical workflow snapshot](docs/history/claude-before-context-2026-09-13.md) — history only.
 
 Updated 2026-09-24. Historical sprint roadmaps and PR protocols are not current instructions.
+
+## Quick Read (development tree)
+
+- `quick_read` separates text sources, normalization, control generations, output and surfaces. Shared Silero worker has opt-in bounded binary PCM on private stdout; legacy document/preview WAV transport remains unchanged. No audio crosses webview IPC.
+- One shared TTS operation lock, at most two queued 200-character sentence fragments plus an inference in progress; PCM limited to 120 s per fragment. cpal output stream belongs to a dedicated thread. Pause retains PCM; stop/new request clears output and cancels source/inference; an interrupted protocol closes the worker.
+- Native same-EXE extraction mode runs before Tauri/single-instance/logging. UIA COM MTA stays in the child, with 3 s hard timeout, bounded stdout and parent watcher. Selection only GetSelection; pointer uses ElementFromPoint/paragraph/Value/Name/Legacy and bounded traversal. Password ancestry fails closed. Clipboard is read-only bounded CF_UNICODETEXT. No automatic Ctrl+C or UIAccess/elevation.
+- OCR child uses GDI BGRA memory and Windows.Media.Ocr with explicit installed RU/EN language, 15 s timeout. Overlay covers the monitor under the cursor; logical drag coordinates map to its physical rectangle. No spanning monitors, at most 4096 px per side/16 MP. Mini-player stays hidden during capture, never auto-activates, and is off by default. No screenshots, source text or speech results are persisted/logged.
+- Rust global-shortcut plugin dispatches by exact shortcut identity; dictation retains Pressed/Released. Settings detect both internal and OS conflicts. UIA/OCR/capture modules and Windows bindings are cfg-isolated. Interactive acceptance remains separate from build/tests: `docs/workstreams/quick-read/manual-qa.md`.

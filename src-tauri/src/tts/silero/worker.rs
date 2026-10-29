@@ -214,6 +214,58 @@ impl Drop for Worker {
 mod tests {
     use super::*;
     #[cfg(windows)]
+    async fn pcm_fixture(header: &str, payload: &[u8]) -> Worker {
+        let bytes = header
+            .bytes()
+            .chain(std::iter::once(b'\n'))
+            .chain(payload.iter().copied())
+            .map(|b| b.to_string())
+            .collect::<Vec<_>>()
+            .join(",");
+        let script=format!("$null=[Console]::ReadLine(); $o=[Console]::OpenStandardOutput(); $b=[byte[]]@({bytes}); $o.Write($b,0,$b.Length); $o.Flush()");
+        let mut child = Command::new("powershell.exe")
+            .args(["-NoProfile", "-Command", &script])
+            .creation_flags(0x08000000)
+            .stdin(Stdio::piped())
+            .stdout(Stdio::piped())
+            .stderr(Stdio::null())
+            .kill_on_drop(true)
+            .spawn()
+            .unwrap();
+        let directory =
+            std::env::temp_dir().join(format!("silero-pcm-test-{}", uuid::Uuid::new_v4()));
+        std::fs::create_dir(&directory).unwrap();
+        Worker {
+            model: &models::RU,
+            input: child.stdin.take().unwrap(),
+            output: BufReader::new(child.stdout.take().unwrap()),
+            child,
+            directory,
+            cancel: Arc::new(AtomicBool::new(false)),
+            last_used: Instant::now(),
+        }
+    }
+    #[cfg(windows)]
+    #[tokio::test]
+    async fn pcm_protocol_reads_binary_without_files_and_rejects_corruption() {
+        let mut good = pcm_fixture(r#"{"pcm_bytes":4}"#, &[1, 0, 255, 127]).await;
+        assert_eq!(
+            good.synthesize_pcm("Test.", "xenia").await.unwrap(),
+            vec![1, 32767]
+        );
+        assert_eq!(std::fs::read_dir(&good.directory).unwrap().count(), 0);
+        good.shutdown().await;
+        for (header, data) in [
+            (r#"{"pcm_bytes":5760002}"#, &[][..]),
+            (r#"{"pcm_bytes":3}"#, &[][..]),
+            (r#"{"pcm_bytes":4}"#, &[1, 0][..]),
+        ] {
+            let mut bad = pcm_fixture(header, data).await;
+            assert!(bad.synthesize_pcm("Test.", "xenia").await.is_err());
+            bad.shutdown().await;
+        }
+    }
+    #[cfg(windows)]
     #[tokio::test]
     async fn unresponsive_process_times_out_and_is_terminated() {
         let mut child = Command::new("powershell.exe")
@@ -244,6 +296,69 @@ mod tests {
             .contains("90"));
         worker.shutdown().await;
         assert!(worker.child.try_wait().unwrap().is_some());
+    }
+    #[tokio::test]
+    #[ignore = "requires pinned RU model and isolated runtime in GLAGOL_TTS_SMOKE_ROOT"]
+    async fn native_silero_pcm_wav_transition_and_cancel() {
+        let root =
+            PathBuf::from(std::env::var("GLAGOL_TTS_SMOKE_ROOT").expect("isolated smoke root"));
+        let cancel = Arc::new(AtomicBool::new(false));
+        super::super::runtime::verify(&root.join("runtime"), &cancel).unwrap();
+        crate::stt::local::download::verify(
+            &root.join(models::RU.artifact.file),
+            models::RU.artifact,
+        )
+        .unwrap();
+        let mut worker = Worker::start(&root, cancel.clone()).await.unwrap();
+        let start = Instant::now();
+        let pcm = worker
+            .synthesize_pcm("Быстрое чтение. Проверяем Windows 11 и USB.", "xenia")
+            .await
+            .unwrap();
+        assert!(pcm.len() > 24000 && pcm.iter().any(|s| *s != 0));
+        assert!(!worker.directory.join("chunk.wav").exists());
+        println!(
+            "Native RU PCM: first fragment {} ms, {} samples, no WAV",
+            start.elapsed().as_millis(),
+            pcm.len()
+        );
+        let wav = worker
+            .synthesize_chunk("Обычная запись после быстрого чтения.", "xenia")
+            .await
+            .unwrap()
+            .unwrap();
+        assert!(hound::WavReader::open(&wav).unwrap().duration() > 24000);
+        std::fs::remove_file(wav).unwrap();
+        assert!(!worker
+            .synthesize_pcm("Следующий фрагмент без файла.", "xenia")
+            .await
+            .unwrap()
+            .is_empty());
+        assert!(!worker.directory.join("chunk.wav").exists());
+        let flag = cancel.clone();
+        tokio::spawn(async move {
+            tokio::time::sleep(Duration::from_millis(50)).await;
+            flag.store(true, Ordering::Relaxed);
+        });
+        let start = Instant::now();
+        assert!(worker
+            .synthesize_pcm(
+                &"Проверяем немедленную отмену фрагмента. ".repeat(5),
+                "xenia"
+            )
+            .await
+            .is_err());
+        assert!(start.elapsed() < Duration::from_secs(3));
+        worker.shutdown().await;
+        drop(worker);
+        cancel.store(false, Ordering::Relaxed);
+        let mut recovered = Worker::start(&root, cancel).await.unwrap();
+        assert!(!recovered
+            .synthesize_pcm("Чтение после отмены.", "xenia")
+            .await
+            .unwrap()
+            .is_empty());
+        recovered.shutdown().await;
     }
     #[tokio::test]
     #[ignore = "requires both pinned models and shared runtime in GLAGOL_TTS_SMOKE_ROOT"]

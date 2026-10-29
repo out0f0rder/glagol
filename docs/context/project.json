@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "observed_at": "2026-10-29T09:16:39.283Z",
+  "observed_at": "2026-10-29T10:02:54.110Z",
   "active_workstream": "quick-read",
   "links": [
     "AGENTS.md",
@@ -116,6 +116,14 @@
       "summary": "На основной машине пользователь подтвердил RU/EN диктовку и озвучку, переключение интерфейса с сохранением текста и языков речи. English-first завершена в согласованном сокращённом объёме; расширенная изолированная QA отложена, не PASS. Далее использование и обратная связь; публикации 0.5.0 не было.",
       "observed_at": "2026-09-24T23:17:37.835Z",
       "source": "docs/workstreams/english-first/live-qa.md"
+    },
+    {
+      "id": "quick-read-local-build",
+      "label": "Quick Read — локальный кандидат",
+      "status": "observed",
+      "summary": "Исходники 0.6.1 + Quick Read; Windows NSIS 10360418 байт, SHA-256 13d70da29057376384a75dd3d90abaf8470c22157719a0287c6ab5e3eb64c827. 359 Rust tests, native RU PCM/EN regression и Python PASS. Не установлен и не опубликован; полная GUI/аудиоприёмка NOT_RUN.",
+      "observed_at": "2026-10-29T10:02:54.110Z",
+      "source": "docs/workstreams/quick-read/log.md"
     }
   ],
   "git_refs": [
@@ -169,6 +177,21 @@
       "sha": "0dc78220a2eded7ec196bbd1749c71d025dc521c",
       "scope": "release",
       "ref": "refs/tags/v0.6.0"
+    },
+    {
+      "id": "quick-read-baseline",
+      "sha": "8c59250",
+      "scope": "main"
+    },
+    {
+      "id": "quick-read-pcm",
+      "sha": "9a910a2",
+      "scope": "local"
+    },
+    {
+      "id": "quick-read-uia",
+      "sha": "5f330b4",
+      "scope": "local"
     }
   ]
 }

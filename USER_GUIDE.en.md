@@ -100,6 +100,52 @@ The Library supports play/pause, seek, 0.5–2× playback speed, volume, rename,
 export and delete. User titles, document contents and
 historical records are not translated when changing the interface.
 
+## Quick Read (local development build)
+
+Quick Read is new in the source tree and is **not included in the linked v0.6.1 release**.
+Install and acknowledge the optional Silero component, choose Russian or English
+and its voice in Settings → Local text to speech, then leave Glagol running in the
+tray. Settings → Quick Read changes shortcuts, OCR language and the optional
+mini-player (off by default).
+
+| Action | Default shortcut |
+|---|---|
+| Read selection | Ctrl+Alt+R |
+| Read clipboard | Ctrl+Alt+V |
+| Read element under pointer | Ctrl+Alt+E |
+| Select screen area and read with OCR | Ctrl+Alt+O |
+| Pause / resume | Ctrl+Alt+P |
+| Stop | Ctrl+Alt+S |
+
+Reading starts after the first sentence fragment is synthesized, while later
+fragments are prepared in a queue of at most two. PCM stays in memory; no WAV or
+library entry is created. A new request replaces the previous reading. Pause
+retains prepared audio. The mini-player adds previous/next fragment and 0.5–2×
+speed; changing speed also changes pitch. Long sentences can span several
+fragments; jumping synthesizes the target again. Errors appear briefly without
+opening the main window. A cold Silero worker still needs time to load.
+
+Selection requires the application's UI Automation support. No automatic Ctrl+C
+fallback is used: when selection is unavailable, copy explicitly and use
+Ctrl+Alt+V. Clipboard formats and the user's selection are never modified by
+Quick Read. Password controls are excluded; protected/elevated applications may
+be inaccessible. UIA extraction has a three-second timeout; Glagol cannot
+provide text that an application does not expose.
+
+OCR is local Windows.Media.Ocr. Choose **Русский / English** in Quick Read
+settings and install that Windows OCR language component; a missing component
+produces an error, with no silent language substitution. Drag a rectangle on
+the monitor under the pointer; Escape cancels. DPI is converted to physical
+pixels, including monitors with negative origins. A region is limited to one
+monitor, 4096 pixels per side and 16 megapixels. OCR takes at most 15 seconds.
+No cloud service, screenshot file or text log is created. Silero and its licence
+requirements are the same as document synthesis; no new download occurs while
+reading. Another active TTS setup/document operation is reported as busy.
+
+Build and unit tests do not establish GUI, OCR accuracy, audio quality or measured
+hotkey-to-sound latency. Windows 11 acceptance scenarios are tracked in
+[manual QA](docs/workstreams/quick-read/manual-qa.md).
+
 ## Dictation
 
 Hold `Ctrl+Shift+Space`. Wait for Preparing microphone to change to the red recording

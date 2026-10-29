@@ -36,6 +36,12 @@ pub fn watch_parent(pid: u32) -> bool {
 }
 fn useful(s: String) -> Option<String> {
     let s = s.trim();
+    if uuid::Uuid::parse_str(s).is_ok()
+        || s.starts_with("HwndWrapper[")
+        || s.starts_with("AutomationId:")
+    {
+        return None;
+    }
     if s.chars().any(char::is_alphabetic) || s.chars().any(char::is_numeric) {
         Some(s.into())
     } else {
@@ -54,8 +60,9 @@ fn text_pattern(element: &IUIAutomationElement) -> windows::core::Result<IUIAuto
 }
 fn protected(element: &IUIAutomationElement, walker: &IUIAutomationTreeWalker) -> bool {
     let mut node = element.clone();
-    for _ in 0..8 {
-        // SAFETY: live COM interfaces, no borrowed output pointers retained.
+    for _ in 0..16 {
+        // SAFETY: live COM interfaces on their MTA thread. Unknown protection or an
+        // incomplete ancestry is rejected. A checked window ends the ancestry scope.
         unsafe {
             if node
                 .CurrentIsPassword()
@@ -64,13 +71,18 @@ fn protected(element: &IUIAutomationElement, walker: &IUIAutomationTreeWalker) -
             {
                 return true;
             }
+            match node.CurrentControlType() {
+                Ok(kind) if kind == UIA_WindowControlTypeId => return false,
+                Err(_) => return true,
+                _ => {}
+            }
             let Ok(parent) = walker.GetParentElement(&node) else {
-                break;
+                return true;
             };
             node = parent;
         }
     }
-    false
+    true
 }
 /// Read only a selection, never DocumentRange on the focused document.
 fn selected(element: &IUIAutomationElement) -> Result<String, String> {

@@ -14,6 +14,8 @@
 | GL-005 | QA gap / open | Crash, response timeout и parent-death worker реализованы, но отдельно не fault-injected | [Integration](../day-logs/day-2026-09-12-silero-integration-master-log.md) | Изолированные сценарии с наблюдаемым завершением worker; не считать обычную отмену их заменой |
 | GL-006 | Defect / open | 0.5.1 установлена: таблетка диктовки снова пропала, текст вставляется; причина unknown, сон с крышкой уже обрабатывается | [Release 0.5.1](../workstreams/release-0.5.1/log.md) | Лог Глагола и события питания Windows в момент исчезновения; исправление с ручной проверкой этого сценария |
 
+| GL-007 | Documentation / open | 2026-10-29: USER_GUIDE.md всё ещё называет 0.5.0 кандидатом и 0.4.1 последним выпуском, хотя ссылки руководств 0.6.1. Старое утверждение не проверялось по remote release в этой задаче | [Quick Read log](../workstreams/quick-read/log.md) | Отдельно сверить опубликованный релиз и обновить указатель; Quick Read помечен как изменение исходников, без публикации |
+
 Якоря GL-001: installer/hooks.nsh, TtsSection, DictationSection и runtime worker;
 GL-002: stt/local downloader + tts/silero/catalog; GL-003: package manager/build;
 GL-004: src-tauri/build.rs; GL-005: tts/silero worker; GL-006: dictation/session overlay. Это места проверки, а не
