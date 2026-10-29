@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "observed_at": "2026-10-29T10:06:57.471Z",
+  "observed_at": "2026-10-29T12:39:52.075Z",
   "active_workstream": "quick-read",
   "links": [
     "AGENTS.md",
@@ -121,8 +121,16 @@
       "id": "quick-read-local-build",
       "label": "Quick Read — локальный кандидат",
       "status": "observed",
-      "summary": "Исходники 0.6.1 + Quick Read; Windows NSIS 10360418 байт, SHA-256 13d70da29057376384a75dd3d90abaf8470c22157719a0287c6ab5e3eb64c827. 359 Rust tests, native RU PCM/EN regression и Python PASS. Не установлен и не опубликован; полная GUI/аудиоприёмка NOT_RUN.",
-      "observed_at": "2026-10-29T10:02:54.110Z",
+      "summary": "Исходники 0.6.1 + Quick Read и приблизительное произношение EN слов RU голосом, local 91a2d99; Windows NSIS 10376668 байт, SHA-256 49f7886ef3d4fce5714c217b931e162bde9efaffb374bea9f978029c6f312d1f. 359 Rust tests, native RU/EN и Python 11 tests PASS. EXE UI ready 393 ms. Не установлен, не опубликован; новая фонетика ожидает слушателя, offline и multi-monitor NOT_RUN.",
+      "observed_at": "2026-10-29T12:39:52.075Z",
+      "source": "docs/workstreams/quick-read/log.md"
+    },
+    {
+      "id": "quick-read-manual",
+      "label": "Quick Read — ручная приёмка основных команд",
+      "status": "reported",
+      "summary": "Пользователь подтвердил выделение в Chrome/Notepad, буфер, наведение, OCR/Escape, замену/паузу/стоп без наложения, mini-player без смены фокуса, переназначение/конфликт, библиотеку/диктовку. Предыдущий CLI кандидат, Windows 11, 1920x1080 125%, один монитор. Offline отложен; новая EN→RU фонетика ещё не оценена.",
+      "observed_at": "2026-10-29T12:39:52.075Z",
       "source": "docs/workstreams/quick-read/log.md"
     }
   ],
@@ -196,6 +204,11 @@
     {
       "id": "quick-read-implementation",
       "sha": "b4e32a6c3210bde4f1fa5d25f477c0f54b50cfbd",
+      "scope": "local"
+    },
+    {
+      "id": "quick-read-phonetics",
+      "sha": "91a2d99",
       "scope": "local"
     }
   ]
