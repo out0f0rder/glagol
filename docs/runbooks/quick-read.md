@@ -51,3 +51,37 @@ Windows language component. Не заменять отсутствующий я�
 отдельной: реальные браузеры/редакторы, global hotkeys, звук/паузы, mini-player без
 фокуса, overlay/Escape, разные DPI/мониторы, offline, регрессия трея и диктовки.
 Сценарий на одном scripted WPF fixture не заменяет эти проверки.
+
+## Живой аудиовыход (только при участии слушателя)
+
+Этот opt-in тест действительно воспроизводит две публичные фразы, делает паузу
+и продолжает через тот же cpal output, что Quick Read. Не включать в unattended CI.
+Нужен тот же изолированный pinned runtime/model, что выше.
+
+```powershell
+cargo test --manifest-path src-tauri/Cargo.toml native_quick_read_audio_pause_and_drain -- --ignored --nocapture
+```
+
+PASS команды подтверждает старт/опустошение cpal очереди и отсутствие ошибки
+устройства. Слышимость и разборчивость подтверждает слушатель отдельно (manual).
+
+## Воспроизводимый UIA/OCR fixture
+
+```powershell
+powershell.exe -NoProfile -STA -ExecutionPolicy Bypass -File scripts/quick-read/windows-ui-smoke.ps1
+```
+
+Окно содержит только публичный тестовый текст. Если Windows не даёт ему фокус,
+пользователь обычным кликом нажимает кнопку запуска теста. Кнопка отделяет
+активацию окна от автоматического SelectAll и не даёт mouse-up очистить выделение. Никаких AttachThreadInput/UIAccess,
+повышения прав, SendInput или обхода foreground-защиты нет. По умолчанию тест
+закрывается после проверок; `-KeepOpen` оставляет окно для ручных горячих клавиш.
+`-ExePath` выбирает собранный EXE, `-OcrLanguage ru-RU|en-US` — язык OCR.
+Не выводится прочитанный текст, буфер не меняется, снимки не сохраняются. Проверки:
+selection, pointer без клика, поле пароля, clipboard sequence, OCR публичного поля.
+Код 0 — все проверки PASS, 1 — ошибка, 2 — отсутствует OCR language component
+(NOT_RUN). Другие приложения могут изменить буфер во время теста; это делает
+проверку sequence неопределённой, а не доказывает дефект Glagol.
+
+Для длинного чтения в другом редакторе используется
+`scripts/quick-read/public-reading.ru.txt` (публичный RU/EN текст, не пользовательский документ).

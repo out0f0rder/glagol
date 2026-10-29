@@ -297,6 +297,99 @@ mod tests {
         worker.shutdown().await;
         assert!(worker.child.try_wait().unwrap().is_some());
     }
+    #[cfg(windows)]
+    #[tokio::test]
+    #[ignore = "plays public fixture speech; requires an attended Windows audio session and GLAGOL_TTS_SMOKE_ROOT"]
+    async fn native_quick_read_audio_pause_and_drain() {
+        use crate::quick_read::player::{self, Buffer};
+        use std::sync::Mutex;
+        struct Output {
+            stop: Arc<AtomicBool>,
+            thread: Option<std::thread::JoinHandle<()>>,
+        }
+        impl Drop for Output {
+            fn drop(&mut self) {
+                self.stop.store(true, Ordering::Relaxed);
+                if let Some(thread) = self.thread.take() {
+                    thread.join().unwrap();
+                }
+            }
+        }
+        let root =
+            PathBuf::from(std::env::var("GLAGOL_TTS_SMOKE_ROOT").expect("isolated smoke root"));
+        let cancel = Arc::new(AtomicBool::new(false));
+        super::super::runtime::verify(&root.join("runtime"), &cancel).unwrap();
+        crate::stt::local::download::verify(
+            &root.join(models::RU.artifact.file),
+            models::RU.artifact,
+        )
+        .unwrap();
+        let mut worker = Worker::start(&root, cancel).await.unwrap();
+        let first = worker
+            .synthesize_pcm("Это проверка быстрого чтения Глагола.", "xenia")
+            .await
+            .unwrap();
+        let second = worker
+            .synthesize_pcm("После короткой паузы чтение продолжается.", "xenia")
+            .await
+            .unwrap();
+        assert!(!first.is_empty() && !second.is_empty());
+        worker.shutdown().await;
+        let shared = Arc::new(Mutex::new(Buffer::default()));
+        {
+            let mut buffer = shared.lock().unwrap();
+            buffer.reset(1);
+            buffer.snapshot.phase = "preparing".into();
+            buffer.snapshot.total = 2;
+            buffer.push(0, first).unwrap();
+            buffer.push(1, second).unwrap();
+            buffer.complete = true;
+        }
+        let stop = Arc::new(AtomicBool::new(false));
+        let output_state = shared.clone();
+        let thread_stop = stop.clone();
+        let _output = Output {
+            stop,
+            thread: Some(std::thread::spawn(move || {
+                player::run(output_state, thread_stop)
+            })),
+        };
+        tokio::time::timeout(Duration::from_secs(10), async {
+            loop {
+                {
+                    let buffer = shared.lock().unwrap();
+                    assert!(buffer.snapshot.error.is_none(), "audio output unavailable");
+                    if buffer.snapshot.phase == "playing" {
+                        break;
+                    }
+                }
+                tokio::time::sleep(Duration::from_millis(10)).await;
+            }
+        })
+        .await
+        .expect("cpal did not start output");
+        tokio::time::sleep(Duration::from_millis(400)).await;
+        shared.lock().unwrap().snapshot.paused = true;
+        tokio::time::sleep(Duration::from_millis(700)).await;
+        shared.lock().unwrap().snapshot.paused = false;
+        tokio::time::timeout(Duration::from_secs(30), async {
+            loop {
+                {
+                    let buffer = shared.lock().unwrap();
+                    assert!(buffer.snapshot.error.is_none(), "audio device disconnected");
+                    if buffer.snapshot.phase == "idle" {
+                        assert_eq!(buffer.snapshot.current, 1);
+                        break;
+                    }
+                }
+                tokio::time::sleep(Duration::from_millis(10)).await;
+            }
+        })
+        .await
+        .expect("cpal did not drain output");
+        assert!(!worker.directory.join("chunk.wav").exists());
+        println!("Quick Read cpal output: two real RU PCM fragments, pause/resume and drain PASS; sound quality requires listener confirmation");
+    }
     #[tokio::test]
     #[ignore = "requires pinned RU model and isolated runtime in GLAGOL_TTS_SMOKE_ROOT"]
     async fn native_silero_pcm_wav_transition_and_cancel() {

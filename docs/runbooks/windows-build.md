@@ -66,6 +66,16 @@ $env:PDFIUM_LIBRARY_PATH = (Resolve-Path 'src-tauri/resources/pdfium.dll').Path
 Это локальный override, не доказательство исправления сетевой загрузки. Записать
 его в validation, не фиксировать абсолютный путь разработчика в исходниках.
 
+## Проверка EXE без установщика
+
+Для GUI использовать EXE после `pnpm tauri build` (либо эквивалентного вызова
+Tauri CLI по этому ранбуку). Сам `cargo build --release` не включает Tauri
+`custom-protocol`: такой бинарник может искать frontend на devUrl localhost:1420
+и показывать отказ соединения в главном окне, mini-player и OCR overlay.
+Нативные child-mode smoke tests этого не обнаруживают: они не загружают webview.
+Перед передачей кандидата проверить появление `application UI ready` и работу
+отдельных окон. Запуск native tests и готовность GUI — отдельные результаты.
+
 ## NSIS
 
 Штатно: `pnpm tauri build`. При подтверждённой проблеме pnpm выше создать локальный
