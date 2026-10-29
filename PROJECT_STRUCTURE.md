@@ -61,7 +61,7 @@ CC BY-NC-SA 4.0 для некоммерческого использования
 
 Quick Read: глобальная команда → UIA/буфер (3 с) либо рамка на мониторе + GDI/WinRT
 OCR (15 с) → консервативная Unicode нормализация → предложения/фрагменты 200 chars →
-общий Silero worker (binary PCM mode) → bounded очередь 2 → cpal callback. Без WAV,
+общий Silero worker (binary PCM mode, RU English phonetics toggle) → bounded очередь 2 → cpal callback. Без WAV,
 SQLite-документов и frontend audio IPC. Отмена заменяет generation и очищает PCM;
 пароль/неизвестная защита отклоняются. Буфер не меняется, Ctrl+C не эмулируется.
 

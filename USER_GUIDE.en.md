@@ -125,6 +125,14 @@ speed; changing speed also changes pitch. Long sentences can span several
 fragments; jumping synthesizes the target again. Errors appear briefly without
 opening the main window. A cold Silero worker still needs time to load.
 
+Russian Quick Read approximates English words on the fly using the same selected
+Russian voice: `Quick Read` → «квик рид». Lightweight rules and built-in exceptions
+need no downloads; names and irregular words may sound inaccurate. Abbreviations
+such as USB/API keep letter names. Turn off “Read English words with the Russian
+voice” in Settings → Quick Read to restore spelling; the change applies to the
+next reading. The English model and regular document synthesis keep their
+existing text processing.
+
 Selection requires the application's UI Automation support. No automatic Ctrl+C
 fallback is used: when selection is unavailable, copy explicitly and use
 Ctrl+Alt+V. Clipboard formats and the user's selection are never modified by

@@ -15,7 +15,7 @@ export function QuickReadSection() {
   const [busy, setBusy] = useState(false);
   const reload = () => getQuickReadSettings().then(value => { setSettings(value); setError(null); }).catch(e => setError(String(e)));
   useEffect(() => { void reload(); }, []);
-  async function option(key: "player" | "ocr_language", value: string) {
+  async function option(key: "player" | "ocr_language" | "phonetic_english", value: string) {
     setBusy(true);
     try { await setQuickReadOption(key, value); await reload(); } catch (e) { toast.error(String(e)); }
     finally { setBusy(false); }
@@ -34,6 +34,8 @@ export function QuickReadSection() {
             onSave={async shortcut => { await setQuickReadShortcut(action, shortcut); await reload(); }} onError={message => toast.error(message)} />
         </div>)}</div>
         <label className="flex items-center justify-between gap-3 text-sm"><span>{t("qrShowPlayer")}</span><Switch checked={settings.show_player} disabled={busy} onCheckedChange={checked => void option("player", checked ? "1" : "0")} /></label>
+        <label className="flex items-center justify-between gap-3 text-sm"><span>{t("qrPhoneticEnglish")}</span><Switch checked={settings.phonetic_english} disabled={busy} onCheckedChange={checked => void option("phonetic_english", checked ? "1" : "0")} /></label>
+        <p className="text-xs text-muted-foreground">{t("qrPhoneticNote")}</p>
         <label className="flex flex-wrap items-center justify-between gap-3 text-sm"><span>{t("qrOcrLanguage")}</span>
           <select className="rounded border bg-background p-2" value={settings.ocr_language} disabled={busy} onChange={event => void option("ocr_language", event.target.value)}><option value="ru-RU">Русский</option><option value="en-US">English</option></select>
         </label>

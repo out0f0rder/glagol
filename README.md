@@ -73,6 +73,14 @@ speed; changing speed also changes pitch. Long sentences can span several
 fragments; jumping synthesizes the target again. Errors appear briefly without
 opening the main window. A cold Silero worker still needs time to load.
 
+Russian Quick Read approximates English words on the fly using the same selected
+Russian voice: `Quick Read` → «квик рид». Lightweight rules and built-in exceptions
+need no downloads; names and irregular words may sound inaccurate. Abbreviations
+such as USB/API keep letter names. Turn off “Read English words with the Russian
+voice” in Settings → Quick Read to restore spelling; the change applies to the
+next reading. The English model and regular document synthesis keep their
+existing text processing.
+
 Selection requires the application's UI Automation support. No automatic Ctrl+C
 fallback is used: when selection is unavailable, copy explicitly and use
 Ctrl+Alt+V. Clipboard formats and the user's selection are never modified by
@@ -99,7 +107,7 @@ hotkey-to-sound latency. Windows 11 acceptance scenarios are tracked in
 
 One compact installer, with English/Russian installation and removal. The language
 selector starts from Windows' language, with English fallback. No speech weights,
-speech ONNX runtime, Python/PyTorch or pronunciation dictionaries are bundled.
+speech ONNX runtime, Python/PyTorch or external pronunciation data are bundled.
 First-run speech setup can be skipped. Choosing a language never downloads files
 or accepts a model license.
 
@@ -207,6 +215,15 @@ the development machine; importing pinned files was exercised separately.
 Ошибки появляются ненадолго без открытия главного окна. Холодному движку Silero
 нужно время на загрузку.
 
+В русском быстром чтении английские слова по умолчанию получают приблизительное
+русское произношение на лету: `Quick Read` → «квик рид», тем же выбранным голосом.
+Используются лёгкие правила и встроенные исключения без скачиваний; произношение
+имён и нерегулярных слов может быть неточным. Аббревиатуры вроде USB/API читаются
+по буквам. В «Настройки» → «Быстрое чтение» выключите «Читать английские слова
+русским голосом», чтобы вернуть побуквенное чтение; изменение действует со
+следующего запуска чтения. Английская модель и обычная озвучка документов
+сохраняют прежнюю обработку текста.
+
 Выделение требует поддержки UI Automation самим приложением. Автоматического
 Ctrl+C нет: при недоступном выделении скопируйте текст явно и нажмите Ctrl+Alt+V.
 Быстрое чтение не меняет форматы буфера и выделение пользователя. Поля паролей
@@ -233,7 +250,7 @@ OCR локальный, через Windows.Media.Ocr. Выберите **Рус�
 
 Один компактный установщик, установка и удаление на EN/RU. Начальный язык — по
 Windows, резервный — английский. В установщике нет речевых весов, речевого ONNX-runtime,
-Python/PyTorch и словарей произношения. Начальную настройку речи можно пропустить.
+Python/PyTorch и внешних словарей произношения. Начальную настройку речи можно пропустить.
 Выбор языка сам ничего не скачивает и не принимает лицензию.
 
 | Необязательный компонент | Первая загрузка | Общий runtime уже установлен |

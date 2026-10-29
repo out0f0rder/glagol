@@ -28,6 +28,7 @@ pub struct QuickRead {
     pub shortcuts: Mutex<shortcuts::Bindings>,
     pub hotkey_gate: tokio::sync::Mutex<()>,
     pub show_player: AtomicBool,
+    pub phonetic_english: AtomicBool,
     pub region: Mutex<Option<surface::Region>>,
     pub capture_generation: AtomicU64,
 }
@@ -44,6 +45,7 @@ impl Default for QuickRead {
             shortcuts: Mutex::new(Default::default()),
             hotkey_gate: tokio::sync::Mutex::new(()),
             show_player: AtomicBool::new(false),
+            phonetic_english: AtomicBool::new(true),
             region: Mutex::new(None),
             capture_generation: AtomicU64::new(0),
         }
@@ -85,10 +87,10 @@ pub fn setup(app: &tauri::AppHandle) -> Result<(), String> {
     );
     shortcuts::setup(app)?;
     surface::setup(app)?;
-    q.show_player.store(
-        settings::quick_read_settings(app.clone())?.show_player,
-        Ordering::Relaxed,
-    );
+    let prefs = settings::quick_read_settings(app.clone())?;
+    q.show_player.store(prefs.show_player, Ordering::Relaxed);
+    q.phonetic_english
+        .store(prefs.phonetic_english, Ordering::Relaxed);
     let handle = app.clone();
     tauri::async_runtime::spawn(async move {
         let mut error_since = None;
@@ -170,6 +172,8 @@ async fn read(app: tauri::AppHandle, id: u64, chunks: Arc<Vec<String>>, start: u
     if !q.current(id) {
         return;
     }
+    // One setting snapshot per reading, including all queued fragments.
+    let phonetic_english = q.phonetic_english.load(Ordering::Relaxed);
     let result = async {
         let (provider, voice) = {
             let state = app.state::<AppState>();
@@ -229,7 +233,7 @@ async fn read(app: tauri::AppHandle, id: u64, chunks: Arc<Vec<String>>, start: u
                     worker
                         .as_mut()
                         .ok_or("Движок не готов")?
-                        .synthesize_pcm(chunk, &voice)
+                        .synthesize_pcm(chunk, &voice, phonetic_english)
                         .await?
                 };
                 let mut buffer = q.buffer.lock().unwrap();

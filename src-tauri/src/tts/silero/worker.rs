@@ -95,12 +95,18 @@ impl Worker {
         );
         Ok(worker)
     }
-    /// Synthesize using the same model/protocol, returning bounded mono PCM without files.
-    pub async fn synthesize_pcm(&mut self, text: &str, voice: &str) -> Result<Vec<i16>, String> {
+    /// Return bounded mono PCM without files; optionally approximate Latin words
+    /// with the Russian voice. The English model ignores this pronunciation flag.
+    pub async fn synthesize_pcm(
+        &mut self,
+        text: &str,
+        voice: &str,
+        phonetic_english: bool,
+    ) -> Result<Vec<i16>, String> {
         if self.cancel.load(Ordering::Relaxed) {
             return Err("Озвучка отменена.".into());
         }
-        let request = serde_json::json!({"text":text,"voice":voice,"pcm":true}).to_string() + "\n";
+        let request = serde_json::json!({"text":text,"voice":voice,"pcm":true,"phonetic_english":phonetic_english}).to_string() + "\n";
         self.input
             .write_all(request.as_bytes())
             .await
@@ -250,7 +256,7 @@ mod tests {
     async fn pcm_protocol_reads_binary_without_files_and_rejects_corruption() {
         let mut good = pcm_fixture(r#"{"pcm_bytes":4}"#, &[1, 0, 255, 127]).await;
         assert_eq!(
-            good.synthesize_pcm("Test.", "xenia").await.unwrap(),
+            good.synthesize_pcm("Test.", "xenia", true).await.unwrap(),
             vec![1, 32767]
         );
         assert_eq!(std::fs::read_dir(&good.directory).unwrap().count(), 0);
@@ -261,7 +267,7 @@ mod tests {
             (r#"{"pcm_bytes":4}"#, &[1, 0][..]),
         ] {
             let mut bad = pcm_fixture(header, data).await;
-            assert!(bad.synthesize_pcm("Test.", "xenia").await.is_err());
+            assert!(bad.synthesize_pcm("Test.", "xenia", true).await.is_err());
             bad.shutdown().await;
         }
     }
@@ -326,11 +332,11 @@ mod tests {
         .unwrap();
         let mut worker = Worker::start(&root, cancel).await.unwrap();
         let first = worker
-            .synthesize_pcm("Это проверка быстрого чтения Глагола.", "xenia")
+            .synthesize_pcm("Это проверка быстрого чтения Глагола.", "xenia", true)
             .await
             .unwrap();
         let second = worker
-            .synthesize_pcm("После короткой паузы чтение продолжается.", "xenia")
+            .synthesize_pcm("После короткой паузы чтение продолжается.", "xenia", true)
             .await
             .unwrap();
         assert!(!first.is_empty() && !second.is_empty());
@@ -405,7 +411,11 @@ mod tests {
         let mut worker = Worker::start(&root, cancel.clone()).await.unwrap();
         let start = Instant::now();
         let pcm = worker
-            .synthesize_pcm("Быстрое чтение. Проверяем Windows 11 и USB.", "xenia")
+            .synthesize_pcm(
+                "Быстрое чтение. Quick Read works locally. Windows 11 и USB.",
+                "xenia",
+                true,
+            )
             .await
             .unwrap();
         assert!(pcm.len() > 24000 && pcm.iter().any(|s| *s != 0));
@@ -423,7 +433,7 @@ mod tests {
         assert!(hound::WavReader::open(&wav).unwrap().duration() > 24000);
         std::fs::remove_file(wav).unwrap();
         assert!(!worker
-            .synthesize_pcm("Следующий фрагмент без файла.", "xenia")
+            .synthesize_pcm("Следующий фрагмент без файла. Quick Read.", "xenia", false)
             .await
             .unwrap()
             .is_empty());
@@ -437,7 +447,8 @@ mod tests {
         assert!(worker
             .synthesize_pcm(
                 &"Проверяем немедленную отмену фрагмента. ".repeat(5),
-                "xenia"
+                "xenia",
+                true,
             )
             .await
             .is_err());
@@ -447,7 +458,7 @@ mod tests {
         cancel.store(false, Ordering::Relaxed);
         let mut recovered = Worker::start(&root, cancel).await.unwrap();
         assert!(!recovered
-            .synthesize_pcm("Чтение после отмены.", "xenia")
+            .synthesize_pcm("Чтение после отмены.", "xenia", true)
             .await
             .unwrap()
             .is_empty());

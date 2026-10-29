@@ -37,6 +37,38 @@ class TextTests(unittest.TestCase):
         self.assertTrue(all(0<len(p)<=480 for p in parts))
         self.assertEqual(" ".join(parts),text.strip())
 
+    def test_phonetic_mixed_text_uses_words_and_keeps_russian(self):
+        self.assertEqual(
+            worker.normalize("Проверка: Quick Read works locally. замо́к!", True),
+            "Проверка: квик рид уёркс лоукэли. зам+ок!",
+        )
+        # Words absent from the exception list still use phonetic rules.
+        self.assertEqual(worker.normalize("streaming blocking shape night nice", True),
+                         "стриминг блокинг шэйп найт найс")
+        self.assertNotRegex(worker.normalize("Новый testing preview", True), r"[A-Za-z]")
+
+    def test_phonetics_preserves_technical_letter_names_and_versions(self):
+        text = worker.normalize("OpenAI QuickRead WebView2 USB-C API GPU RTX 4090 16GB 3.5 MHz", True)
+        self.assertIn("оупен эй ай квик рид вэб вью два", text)
+        self.assertIn("ю эс би-си эй пи ай джи пи ю ар ти экс", text)
+        self.assertIn("шестнадцать джи би три точка пять эм эйч зэд", text)
+        self.assertEqual(worker.pronounce_latin("x"), "экс")
+        self.assertEqual(worker.pronounce_latin("IT"), "ай ти")
+        self.assertEqual(worker.pronounce_latin("it"), "ит")
+
+    def test_legacy_spelling_can_be_restored(self):
+        legacy = "Прочесть кью ю ай си кей ар и эй ди и виндоус ю эс би"
+        self.assertEqual(worker.normalize("Прочесть Quick Read и Windows USB"), legacy)
+        self.assertEqual(worker.normalize("Прочесть Quick Read и Windows USB", False), legacy)
+
+    def test_phonetics_bounds_unknown_identifiers_and_keeps_punctuation(self):
+        identifier = "a" * 200
+        self.assertEqual(worker.pronounce_latin(identifier), " ".join(["эй"] * 200))
+        self.assertEqual(worker.normalize("строка\n\nHELLO, world? 001 20%", True),
+                         "строка хеллоу, уорлд? ноль ноль один двадцать процентов")
+        self.assertEqual(worker.normalize("USB PDF 12.09.2026 14:30", True),
+                         worker.normalize("USB PDF 12.09.2026 14:30"))
+
 class MemoryProtocolTests(unittest.TestCase):
     def test_exact_binary_frame_and_no_wav(self):
         output = io.BytesIO()

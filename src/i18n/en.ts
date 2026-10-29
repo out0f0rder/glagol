@@ -48,6 +48,8 @@ export const en = {
   qrPrevious: "Previous sentence",
   qrNext: "Next sentence",
   qrShowPlayer: "Show mini-player during reading (does not take focus)",
+  qrPhoneticEnglish: "Read English words with the Russian voice",
+  qrPhoneticNote: "Approximate pronunciation on the fly: Quick Read → квик рид. Enabled by default for Russian Quick Read; abbreviations keep letter names. Turn off to spell words. Applies to the next reading.",
   qrOcrLanguage: "OCR language",
   qrOcrNote: "Requires the selected Windows OCR language component. Select an area on the monitor under the pointer; areas spanning monitors are not supported. No cloud services.",
   qrPreparing: "Preparing…",

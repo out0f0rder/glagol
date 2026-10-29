@@ -14,6 +14,7 @@ use tauri_plugin_global_shortcut::Shortcut;
 pub struct Settings {
     pub shortcuts: BTreeMap<String, String>,
     pub show_player: bool,
+    pub phonetic_english: bool,
     pub ocr_language: String,
     pub registration_errors: Vec<String>,
 }
@@ -36,6 +37,10 @@ pub fn quick_read_settings(app: tauri::AppHandle) -> Result<Settings, String> {
             .map_err(|e| e.to_string())?
             .as_deref()
             == Some("1"),
+        phonetic_english: repository::get_setting(&db, "quick_read_phonetic_english")
+            .map_err(|e| e.to_string())?
+            .as_deref()
+            != Some("0"),
         ocr_language: repository::get_setting(&db, "quick_read_ocr_language")
             .map_err(|e| e.to_string())?
             .unwrap_or_else(|| {
@@ -125,6 +130,7 @@ pub fn quick_read_set_option(
 ) -> Result<(), String> {
     let persist = match key.as_str() {
         "player" if value == "0" || value == "1" => "quick_read_player",
+        "phonetic_english" if value == "0" || value == "1" => "quick_read_phonetic_english",
         "ocr_language" if value == "ru-RU" || value == "en-US" => "quick_read_ocr_language",
         _ => return Err("Invalid reading preference".into()),
     };
@@ -135,6 +141,10 @@ pub fn quick_read_set_option(
     if key == "player" {
         app.state::<QuickRead>()
             .show_player
+            .store(value == "1", std::sync::atomic::Ordering::Relaxed);
+    } else if key == "phonetic_english" {
+        app.state::<QuickRead>()
+            .phonetic_english
             .store(value == "1", std::sync::atomic::Ordering::Relaxed);
     }
     Ok(())

@@ -17,6 +17,7 @@ the per-session master logs under [`docs/day-logs/`](docs/day-logs/).
 
 ### Added
 
+- Russian Quick Read can pronounce English words approximately on the fly with the same voice, using local rules and exceptions. Enabled by default; a setting restores letter spelling. / Русское быстрое чтение приблизительно произносит английские слова на лету тем же голосом по локальным правилам и исключениям. По умолчанию включено; настройка возвращает побуквенное чтение.
 - Quick Read for Windows: selection, Unicode clipboard, UI Automation under the pointer and local Windows OCR area capture. / Быстрое чтение Windows: выделение, Unicode-буфер, UI Automation под курсором и локальный OCR области.
 - Six configurable global shortcuts, optional mini-player, pause/resume, stop, previous/next fragment and speed. Shared Silero inference streams bounded PCM directly to output, without WAV files or library records. / Шесть настраиваемых глобальных сочетаний, необязательный мини-плеер, пауза/продолжение, остановка, переходы и скорость. Общий Silero передаёт ограниченный PCM прямо в плеер без WAV и записей библиотеки.
 - Selection extraction preserves the clipboard by using UIA only; unsupported apps need explicit copying. OCR needs an installed RU/EN Windows language component and selects one monitor at a time. / Извлечение выделения сохраняет буфер, используя только UIA; в неподдерживаемых приложениях нужно явное копирование. Для OCR требуется установленный RU/EN компонент Windows, область выбирается в пределах одного монитора.
