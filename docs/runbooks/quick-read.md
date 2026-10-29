@@ -102,3 +102,19 @@ selection, pointer без клика, поле пароля, clipboard sequence,
 чтения, WAV документов/предпрослушивания и EN модель не меняются. Фонетика
 приблизительная, особенно для имён/нерегулярных слов; словарь пользователя пока
 не редактируется. Никаких новых моделей, сетевых запросов или логирования текста.
+
+## VS Code: выделение в редакторе файла
+
+Если видимое выделение не предоставляется через UIA, пользователь включает
+`editor.accessibilitySupport: on` в VS Code, затем возвращается в файл и заново
+выделяет текст. Это штатная настройка, не обход Windows security и не изменение
+clipboard. Не менять чужой VS Code profile автоматически. Режим может отключать
+minimap/folding; значение `auto` возвращает автоматическое определение.
+[Официальная инструкция](https://code.visualstudio.com/docs/configure/accessibility/accessibility#_screen-reader-mode).
+
+Для диагностики достаточно metadata: сфокусированный Edit/native-edit-context,
+наличие TextPattern и сравнение Start/End GetSelection, без GetText/Name/Value.
+Collapsed range не заменять DocumentRange или ValuePattern: иначе можно прочитать
+весь документ без выделения. Этот обходной путь проверен пользователем для file
+editor VS Code 1.143.1 на Windows 11; terminal, chat/webview и multi-cursor отдельно
+не проверены. Если настройка неприемлема, явное Copy + Read clipboard либо OCR.

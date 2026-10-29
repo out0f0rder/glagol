@@ -89,6 +89,16 @@ be inaccessible. Pointer lookup uses physical screen coordinates on scaled displ
 UIA extraction has a three-second timeout; Glagol cannot
 provide text that an application does not expose.
 
+**VS Code file editor:** if a visible selection produces “No readable text”,
+open VS Code Settings (`Ctrl+,`), find `editor.accessibilitySupport` and select
+`on`. Return to the file, select the text again and press `Ctrl+Alt+R`.
+A user confirmed this with VS Code 1.143.1 on Windows 11: UIA exposed an empty
+selection before the change, and reading worked afterward. Screen reader mode
+can disable the minimap and code folding; choose `auto` to restore automatic
+mode. Glagol does not change VS Code settings. If this mode is unsuitable, copy
+explicitly and use `Ctrl+Alt+V` or OCR.
+[VS Code screen reader mode](https://code.visualstudio.com/docs/configure/accessibility/accessibility#_screen-reader-mode).
+
 OCR is local Windows.Media.Ocr. Choose **Русский / English** in Quick Read
 settings and install that Windows OCR language component; a missing component
 produces an error, with no silent language substitution. Drag a rectangle on
@@ -231,6 +241,16 @@ Ctrl+C нет: при недоступном выделении скопируй
 координаты указателя при масштабировании экрана. На извлечение
 UIA отведены три секунды; Глагол не может получить текст, который приложение не
 предоставляет.
+
+**VS Code, редактор файла:** если при видимом выделении появляется «Текст не найден»,
+откройте настройки VS Code (`Ctrl+,`), найдите `editor.accessibilitySupport` и
+выберите `on`. Вернитесь в файл, заново выделите текст и нажмите `Ctrl+Alt+R`.
+В VS Code 1.143.1 на Windows 11 это подтвердил пользователь: в обычном режиме UIA
+сообщал пустое выделение, после включения чтение заработало. Режим доступности
+может отключать мини-карту и сворачивание блоков; вернуть автоматический режим
+можно значением `auto`. Глагол сам настройки VS Code не меняет. Если этот режим
+не подходит, скопируйте текст явно и используйте `Ctrl+Alt+V` либо OCR.
+[Режим доступности VS Code](https://code.visualstudio.com/docs/configure/accessibility/accessibility#_screen-reader-mode).
 
 OCR локальный, через Windows.Media.Ocr. Выберите **Русский / English** в настройках
 быстрого чтения и установите соответствующий компонент OCR Windows; отсутствие

@@ -50,4 +50,10 @@ localhost у ошибочно запущенного Cargo EXE сохранен�
 что смешанный публичный пример звучит хорошо приблизительными словами тем же
 русским голосом; выключение настройки возвращает Quick Read по буквам. PASS
 этого примера и переключения, не гарантия правильности всех английских слов.
+VS Code file editor 1.143.1, manual 2026-10-29: исходный Ctrl+Alt+R вернул
+no readable text. После ручного включения `editor.accessibilitySupport: on` и
+повторного выделения пользователь подтвердил чтение. Metadata UIA (без GetText)
+зафиксировала переход collapsed → nonempty range. PASS для этой настройки и
+file editor; terminal/chat/webview/multi-cursor этим не проверены.
+
 Полные команды и хронология — [log.md](log.md).

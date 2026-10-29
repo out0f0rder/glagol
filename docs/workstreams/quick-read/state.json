@@ -311,6 +311,34 @@
       ]
     },
     {
+      "id": "V",
+      "title": "Диагностика и совместимость выделения VS Code",
+      "status": "done",
+      "depends_on": [
+        "P"
+      ],
+      "required": [
+        "verification"
+      ],
+      "checks": [
+        {
+          "id": "verification",
+          "status": "PASS",
+          "method": "manual",
+          "command": "VS Code file editor: включить editor.accessibilitySupport=on, вернуться в файл, выделить несколько строк, нажать Ctrl+Alt+R",
+          "cwd": ".",
+          "at": "2026-10-29T13:24:39.696Z",
+          "environment": {
+            "os": "Windows 11 build 26200.9711",
+            "editor": "VS Code 1.143.1; direct-run Glagol candidate 91a2d99"
+          },
+          "exit_code": null,
+          "output": "Пользователь: чтение заработало. Metadata monitor без GetText наблюдал TextPattern и переход collapsed→nonempty selection. Terminal/chat/multi-cursor этим не проверены. Исходники Glagol не менялись.",
+          "evidence": "docs/workstreams/quick-read/log.md"
+        }
+      ]
+    },
+    {
       "id": "O",
       "title": "Отложенная ручная проверка чтения и OCR без сети",
       "status": "pending",

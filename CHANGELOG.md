@@ -11,6 +11,10 @@ the per-session master logs under [`docs/day-logs/`](docs/day-logs/).
 
 ## [Unreleased]
 
+### Documentation
+
+- Added the VS Code selection setup: enable `editor.accessibilitySupport: on` when its editor exposes an empty UIA selection; the reading was confirmed on Windows 11. / Добавлена настройка чтения выделения VS Code: включить `editor.accessibilitySupport: on`, если редактор передаёт пустой диапазон UIA; работа подтверждена на Windows 11.
+
 ### Fixed
 
 - Quick Read uses physical pointer coordinates before Tauri starts, so UI Automation follows the pointer on scaled displays. Cold UIA providers have more time within the same three-second process timeout. / Быстрое чтение получает физические координаты указателя ещё до запуска Tauri: UI Automation правильно находит элемент при масштабировании экрана. Холодному UIA-провайдеру дано больше времени в пределах того же трёхсекундного таймаута процесса.
