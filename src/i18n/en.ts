@@ -46,7 +46,7 @@ export const en = {
   qrTitle: "Quick Read",
   qrDescription: "Read Windows text locally from the tray, without saving to your library.",
   qrSetup: "Uses the Silero language and voice selected above. Install and acknowledge that component first.",
-  qrClipboardSafety: "Selection uses UI Automation. If unsupported, copy text yourself and use Read clipboard. Glagol does not send Ctrl+C or change the clipboard. Protected controls are skipped.",
+  qrClipboardSafety: "Reading a selection leaves the clipboard unchanged. If selection is unavailable, copy text yourself and use Read clipboard. Glagol does not send Ctrl+C. Protected controls are skipped.",
   qrConflicts: "These shortcuts could not be registered. Assign another combination:",
   qrSelection: "Read selection",
   qrClipboard: "Read clipboard",

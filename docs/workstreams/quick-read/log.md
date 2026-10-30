@@ -160,3 +160,23 @@ TSC/build ранее exit0 (289 i18n keys,3m38s); 49 runbook tests и3 i18n test
 ## 2026-10-30T08:53:08.661Z — L завершён; N занят
 
 Все обязательные L gates PASS с указанными границами; context refresh/check выполнены, 14 series OK. Saved startup preference UI и фактический вход в Windows не объявляются проверенными: настоящая Run регистрация не включалась автоматически. Автозапуск подготовлен как opt-in. L завершён; N (Notepad++ selection) in_progress, claim Codex обновлён. Пользователю отправлен запрос оставить выделение в редакторе; metadata probe не будет вызывать GetText. Offline O остаётся pending/deferred.
+
+## 2026-10-30T09:00:27.754Z — N: причина Notepad++ и ограниченный Win32 fallback
+
+Metadata-only UIA probe (Windows PS5.1, exit0) на оставленном пользователем выделении: focused Scintilla Pane, password=false, TextPattern=false. Отдельный read-only scalar probe для Notepad++8.7.5: native selection nonempty=true, count1, mode0, code_page65001 при TextPattern/Legacy=false. GetText/clipboard/focus mutation не использовались. Это реальная причина no readable text, не отсутствие визуального выделения. Официальная Scintilla documentation подтверждает различия accessibility по платформам (Win32 только caret): https://scintilla.org/ScintillaDoc.html#Accessibility .
+
+Добавлен Windows-only Scintilla fallback после неудачной UIA selection и password ancestry: только точный focused Unicode HWND класса Scintilla; scalar SCI queries и CountCodeUnits переводят offsets в UTF-16; текст получает системно маршалируемый WM_GETTEXT (<WM_USER), а не SCI_GETSELTEXT с чужим указателем. Никаких remote memory APIs, clipboard writes, keys, focus changes, admin/security bypass. Бounded prefix только до конца selection: максимум2MB byte offset/500k UTF-16 units, 150ms/message и прежний hard3s child timeout. Non-selected prefix отбрасывается, не читается вслух/не сохраняется. После чтения перепроверяются selection snapshot и focus; поддержаны один stream selection, UTF-8/SBCS, прочее явно предлагает clipboard/OCR. Числа сообщений сверены с primary ScintillaMessages.h; marshalling semantics — Microsoft SendMessageTimeoutW docs. Следом fmt/clippy/test и native Notepad++ public fixture, затем новый NSIS; пока работа fallback NOT_RUN.
+
+## 2026-10-30T09:14:56.020Z — N принят вручную; запрос M
+
+Пользователь на новой QA копии (PID34572, hidden --tray launch readiness observed) подтвердил: «Да, читается только выделенное» в Notepad++ после Ctrl+Alt+R. Это manual PASS чтения выбранного фрагмента; не утверждается проверка всех кодировок/режимов/сложных файлов. Rust fmt/clippy exit0, полные unit tests PASS (новые Scintilla pure tests включены); frontend TSC/build exit0,289i18n keys,3m56s. Финальный N NSIS с этим frontend ещё собирается; исходники после старта сборки не меняются до её завершения.
+
+Также пользователь подтвердил видимость/изменение/сохранение обоих Startup switches при повторном открытии настроек — manual settings-ui PASS добавлен в L. Windows login/OS disable по-прежнему NOT_RUN; конечные значения не выяснялись, автоматически не менялись.
+
+Новый запрос: X мини-плеера должен скрывать его, не останавливая чтение. Добавлен M pending после N, раньше O. План: отдельная hide command и suppression по поколению текущего чтения; не сбрасывать PCM/позицию/паузы и не менять постоянный show-player preference. При новом чтении плеер снова появляется по настройке; квадрат и stop hotkey сохраняют остановку. До завершения N gates технический M не начат.
+
+## 2026-10-30T09:16:58.827Z — N завершён, M занят
+
+N обязательные проверки PASS: Rust fmt/clippy,366 unit tests/0failed/8ignored (5.30s), TSC/Vite289keys3m56s,49 runbook и3 i18n tests. Native manual Notepad++ чтение только выделенного подтверждено пользователем. NSIS с завершённым N frontend: release50.63s, exit0, 10408814bytes, SHA256 191a7a37678da7e5607ae2e77bff522a8e79e8e41dc38ed1ad55446783aa478d, built 2026-10-30T09:15:12.021834+00:00; source ещё dirty N поверх aaa6b34. Артефакт скопирован в quick-read-dist с metadata/hash, не установлен/опубликован. Сложные режимы/DBCS/повышенные процессы/пределы реальных крупных файлов остаются непроверенными вручную и документированными.
+
+M занят перед изменениями: X должен только скрыть окно текущего поколения, PCM/позиция/пауза/настройка show-player сохраняются. Следующий запрос снова показывает плеер по настройке; stop остаётся отдельной кнопкой/горячей клавишей. Исходники N сначала сохраняются отдельным commit; затем M. O offline по-прежнему deferred.

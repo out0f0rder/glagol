@@ -139,3 +139,22 @@ uninstall/update — отдельная ручная приёмка, не рез
 В generated `target/release/nsis/x64/installer.nsi` убедиться, что value name
 `Glagol` совпадает с PRODUCTNAME; штатное удаление Run value ограничено
 `$UpdateMode <> 1`. Локальная компиляция NSIS не доказывает реальный uninstall.
+
+## Notepad++ / Scintilla
+
+Диагностика — ClassName=Scintilla, password=false, отсутствие TextPattern, scalar
+native selection/count/mode/codepage, без GetText/Value/clipboard/focus writes.
+Не выдавать это за проверку правильного текста или звука. Source fallback пробует
+только exact focused Unicode HWND после UIA password ancestry. Все SCI_* запросы
+скалярные; единственный text buffer идёт в WM_GETTEXT (<WM_USER, OS marshaling).
+Никаких VirtualAllocEx/ReadProcessMemory, SCI_GETSELTEXT с remote pointer или
+ChangeWindowMessageFilterEx. Перепроверить focus/snapshot после чтения.
+
+Unit tests: selected-only UTF-16 с кириллицей/emoji/CRLF; rejection collapsed,
+multiple/rectangle, oversized/end-outside-doc/unsupported-codepage; truncated
+buffer/invalid surrogate/blank selection. Native manual: выделить смешанный
+публичный пример в Notepad++8.7.5, Ctrl+Alt+R, проверить только выбранный фрагмент,
+сохранность выделения/буфера. Empty и rectangular selection не должны читать весь
+документ. Большой file prefix: максимум2MB byte offset/500k UTF-16; сообщение
+предлагает explicit copy/read clipboard или OCR. UTF-8/SBCS; DBCS отдельно не поддержан.
+Все calls150ms, original child hard3s; нет исключений для повышенного процесса.

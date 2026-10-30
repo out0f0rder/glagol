@@ -102,13 +102,21 @@ voice” in Settings → Quick Read to restore spelling; the change applies to t
 next reading. The English model and regular document synthesis keep their
 existing text processing.
 
-Selection requires the application's UI Automation support. No automatic Ctrl+C
+Selection first uses the application's UI Automation support. No automatic Ctrl+C
 fallback is used: when selection is unavailable, copy explicitly and use
 Ctrl+Alt+V. Clipboard formats and the user's selection are never modified by
 Quick Read. Password controls are excluded; protected/elevated applications may
 be inaccessible. Pointer lookup uses physical screen coordinates on scaled displays.
 UIA extraction has a three-second timeout; Glagol cannot
 provide text that an application does not expose.
+
+**Notepad++:** an ordinary single selection uses a read-only Scintilla fallback
+when UI Automation does not expose text. UTF-8 and single-byte modes are supported;
+focus, selection and clipboard stay unchanged. For rectangular/multiple selections,
+other encodings or a range far into a large file, copy explicitly and use
+`Ctrl+Alt+V` or OCR. Direct reading is limited to a selection end within 2 MB and a
+prefix of at most 500,000 UTF-16 units. Only the selected range is spoken; the rest
+of the bounded prefix is discarded.
 
 **VS Code file editor:** if a visible selection produces “No readable text”,
 open VS Code Settings (`Ctrl+,`), find `editor.accessibilitySupport` and select
@@ -276,13 +284,21 @@ the development machine; importing pinned files was exercised separately.
 следующего запуска чтения. Английская модель и обычная озвучка документов
 сохраняют прежнюю обработку текста.
 
-Выделение требует поддержки UI Automation самим приложением. Автоматического
+Сначала выделение запрашивается через UI Automation приложения. Автоматического
 Ctrl+C нет: при недоступном выделении скопируйте текст явно и нажмите Ctrl+Alt+V.
 Быстрое чтение не меняет форматы буфера и выделение пользователя. Поля паролей
 исключены; защищённые/повышенные приложения могут быть недоступны. Наведение использует физические
 координаты указателя при масштабировании экрана. На извлечение
 UIA отведены три секунды; Глагол не может получить текст, который приложение не
 предоставляет.
+
+**Notepad++:** обычное одиночное выделение читается через отдельный read-only
+адаптер Scintilla, когда UI Automation не предоставляет текст. Поддержаны UTF-8
+и однобайтовые режимы; фокус, выделение и буфер не меняются. Для прямоугольного или
+множественного выделения, других кодировок и области далеко от начала большого
+файла используйте явное копирование + `Ctrl+Alt+V` либо OCR. Прямой путь ограничен
+позицией конца до 2 МБ и префиксом до 500 000 UTF-16 единиц. Из ограниченного
+префикса озвучивается только выделенный диапазон; остальной текст отбрасывается.
 
 **VS Code, редактор файла:** если при видимом выделении появляется «Текст не найден»,
 откройте настройки VS Code (`Ctrl+,`), найдите `editor.accessibilitySupport` и

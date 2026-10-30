@@ -196,7 +196,20 @@ pub fn extract(source: &str) -> Result<String, String> {
             return Err("protected".into());
         }
         if source == "selection" {
-            return selected(&element);
+            return selected(&element).or_else(|error| {
+                if matches!(error.as_str(), "empty" | "unavailable") {
+                    if let Ok(hwnd) = element.CurrentNativeWindowHandle() {
+                        return super::scintilla::selected(hwnd).map_err(|fallback| {
+                            if fallback == "unavailable" {
+                                error
+                            } else {
+                                fallback
+                            }
+                        });
+                    }
+                }
+                Err(error)
+            });
         }
         if let Some(text) = pointed(&element, point) {
             return Ok(text);

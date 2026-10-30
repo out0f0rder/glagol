@@ -3,6 +3,8 @@
 #[cfg(windows)]
 mod ocr;
 #[cfg(windows)]
+mod scintilla;
+#[cfg(windows)]
 mod windows;
 #[cfg(windows)]
 use std::process::Stdio;
@@ -67,6 +69,9 @@ pub async fn run(source: &str, args: &[String], timeout: Duration) -> Result<Str
                 "Protected controls cannot be read.",
                 "Защищённые поля не читаются.",
             ),
+            "scintilla_selection" => super::message("Use one ordinary text selection in Notepad++; for rectangular or multiple selections use Read clipboard.", "Используйте одно обычное выделение в Notepad++; для прямоугольного или множественного выделения прочитайте буфер."),
+            "scintilla_limit" | "scintilla_encoding" => super::message("Direct selection reading is unavailable for this document range or encoding. Copy the selection and use Read clipboard, or OCR.", "Прямое чтение недоступно для этой области документа или кодировки. Скопируйте выделение и прочитайте буфер либо используйте OCR."),
+            "changed" => super::message("Selection or focus changed. Select text again and retry.", "Выделение или фокус изменились. Выделите текст заново и повторите."),
             "limit" => super::message(
                 "Text is too long (500,000 characters maximum).",
                 "Текст слишком длинный (максимум 500 000 символов).",

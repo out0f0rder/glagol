@@ -17,6 +17,7 @@ the per-session master logs under [`docs/day-logs/`](docs/day-logs/).
 
 ### Fixed
 
+- Read ordinary Notepad++ selections through a bounded, read-only Scintilla fallback when UI Automation exposes no TextPattern. Unicode offsets are preserved; unsupported ranges or selection modes offer clipboard/OCR. / Обычное выделение Notepad++ читается через ограниченный read-only адаптер Scintilla, если UI Automation не даёт TextPattern. Unicode-позиции сохраняются; для неподдерживаемой области или режима предлагаются буфер/OCR.
 - Quick Read uses physical pointer coordinates before Tauri starts, so UI Automation follows the pointer on scaled displays. Cold UIA providers have more time within the same three-second process timeout. / Быстрое чтение получает физические координаты указателя ещё до запуска Tauri: UI Automation правильно находит элемент при масштабировании экрана. Холодному UIA-провайдеру дано больше времени в пределах того же трёхсекундного таймаута процесса.
 
 ### Added

@@ -3,11 +3,11 @@
   "id": "quick-read",
   "title": "Быстрое чтение Windows",
   "status": "active",
-  "next": "N",
+  "next": "M",
   "reason": null,
   "claim": {
     "owner": "codex",
-    "at": "2026-10-30T08:53:08.661Z",
+    "at": "2026-10-30T09:16:58.827Z",
     "branch": "feat/quick-read"
   },
   "links": [
@@ -426,18 +426,122 @@
           "exit_code": 0,
           "output": "PASS: first --tray hidden/no activation, hidden repeat hidden, normal repeat shows main, hidden repeat visible remains visible, first --show opens; candidate left PID46392",
           "evidence": "docs/workstreams/quick-read/log.md"
+        },
+        {
+          "id": "settings-ui",
+          "status": "PASS",
+          "method": "manual",
+          "command": "Открыть через трей Настройки → Запуск приложения; проверить оба переключателя и сохранность при повторном открытии настроек",
+          "cwd": ".",
+          "at": "2026-10-30T09:14:56.020Z",
+          "environment": {
+            "runtime": "Windows 11; tested QA candidate with aaa6b34 startup code"
+          },
+          "exit_code": null,
+          "output": "Пользователь: Да, настройки работают. Фактический вход в Windows и выбранные конечные значения переключателей не проверялись.",
+          "evidence": "docs/workstreams/quick-read/log.md"
         }
       ]
     },
     {
       "id": "N",
       "title": "Выделение текста в Notepad++",
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "L"
       ],
       "required": [
-        "verification"
+        "verification",
+        "rust",
+        "frontend",
+        "nsis",
+        "context"
+      ],
+      "checks": [
+        {
+          "id": "verification",
+          "status": "PASS",
+          "method": "manual",
+          "command": "Notepad++8.7.5: обычное выделение → Ctrl+Alt+R на новой скрыто запущенной QA копии",
+          "cwd": ".",
+          "at": "2026-10-30T09:16:58.827Z",
+          "environment": {
+            "runtime": "Windows11; Notepad++8.7.5; UTF-8; QA PID34572"
+          },
+          "exit_code": null,
+          "output": "Пользователь: Да, читается только выделенное. До исправления UIA TextPattern=false при nonempty native selection; fallback root cause подтверждён metadata probe. Другие кодировки/сложные выделения вручную не проверены.",
+          "evidence": "docs/workstreams/quick-read/log.md"
+        },
+        {
+          "id": "rust",
+          "status": "PASS",
+          "method": "command",
+          "command": "env PATHEXT='.COM;.EXE;.BAT;.CMD' cmd.exe /d /c 'I:\\_AI\\glagol\\.scratch\\check.cmd fmt --manifest-path src-tauri/Cargo.toml --check'; env PATHEXT='.COM;.EXE;.BAT;.CMD' cmd.exe /d /c 'I:\\_AI\\glagol\\.scratch\\check.cmd clippy --manifest-path src-tauri/Cargo.toml --all-targets -- -D warnings'; env PATHEXT='.COM;.EXE;.BAT;.CMD' cmd.exe /d /c 'I:\\_AI\\glagol\\.scratch\\check.cmd test --manifest-path src-tauri/Cargo.toml'",
+          "cwd": ".",
+          "at": "2026-10-30T09:16:58.827Z",
+          "environment": {
+            "runtime": "Windows Rust1.99.1; per-child PATHEXT override"
+          },
+          "exit_code": 0,
+          "output": "fmt/clippy exit0;366passed,0failed,8ignored;5.30s",
+          "evidence": "docs/workstreams/quick-read/log.md"
+        },
+        {
+          "id": "frontend",
+          "status": "PASS",
+          "method": "command",
+          "command": "pnpm exec tsc --noEmit; pnpm build",
+          "cwd": ".",
+          "at": "2026-10-30T09:16:58.827Z",
+          "environment": {
+            "runtime": "WSL Node24.13.0/pnpm12.16.1"
+          },
+          "exit_code": 0,
+          "output": "TSC exit0;289keys;Vite3m56s; existing bundle-size warning",
+          "evidence": "docs/workstreams/quick-read/log.md"
+        },
+        {
+          "id": "nsis",
+          "status": "PASS",
+          "method": "command",
+          "command": "env PATHEXT='.COM;.EXE;.BAT;.CMD' cmd.exe /d /c 'I:\\_AI\\glagol\\.scratch\\bundle.cmd'",
+          "cwd": ".",
+          "at": "2026-10-30T09:16:58.827Z",
+          "environment": {
+            "runtime": "Windows Node22.23.1/Rust1.99.1/TauriCLI2.11.1"
+          },
+          "exit_code": 0,
+          "output": "Finished1bundle,release50.63s;10408814bytes;SHA256191a7a37678da7e5607ae2e77bff522a8e79e8e41dc38ed1ad55446783aa478d;not installed/published",
+          "evidence": "docs/workstreams/quick-read/log.md"
+        },
+        {
+          "id": "context",
+          "status": "PASS",
+          "method": "command",
+          "command": "pnpm runbook:test; pnpm i18n:test; pnpm context:refresh; pnpm runbook:check",
+          "cwd": ".",
+          "at": "2026-10-30T09:16:58.827Z",
+          "environment": {
+            "runtime": "WSL Node24.13.0/pnpm12.16.1"
+          },
+          "exit_code": 0,
+          "output": "49runbook,3i18n tests PASS; context write/check complete in same checkpoint",
+          "evidence": "docs/workstreams/quick-read/log.md"
+        }
+      ]
+    },
+    {
+      "id": "M",
+      "title": "Крестик мини-плеера скрывает окно без остановки чтения",
+      "status": "in_progress",
+      "depends_on": [
+        "N"
+      ],
+      "required": [
+        "rust",
+        "frontend",
+        "nsis",
+        "context"
       ],
       "checks": []
     },

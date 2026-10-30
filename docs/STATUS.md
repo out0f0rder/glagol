@@ -7,15 +7,15 @@
 
 Выбранная серия: **Быстрое чтение Windows**.
 
-**NEXT: N — Выделение текста в Notepad++** (in_progress).
+**NEXT: M — Крестик мини-плеера скрывает окно без остановки чтения** (in_progress).
 
 [Решения](workstreams/quick-read/README.md) · [Состояние](workstreams/quick-read/state.json) · [Журнал](workstreams/quick-read/log.md)
 
-Выполняет: codex; ветка feat/quick-read; с 2026-10-30T08:53:08.661Z.
+Выполняет: codex; ветка feat/quick-read; с 2026-10-30T09:16:58.827Z.
 
-Последний завершённый шаг серии: **L — Автозапуск Windows и запуск в трей**.
+Последний завершённый шаг серии: **N — Выделение текста в Notepad++**.
 
-Проверка 2026-10-30T08:53:08.661Z: fmt/clippy exit0; parallel cargo test363passed,0failed,8ignored in14.34s; exact tests not skipped ([evidence](../docs/workstreams/quick-read/log.md)).
+Проверка 2026-10-30T09:16:58.827Z: Пользователь: Да, читается только выделенное. До исправления UIA TextPattern=false при nonempty native selection; fallback root cause подтверждён metadata probe. Другие кодировки/сложные выделения вручную не проверены. ([evidence](../docs/workstreams/quick-read/log.md)).
 
 ## Доставка и наблюдения
 

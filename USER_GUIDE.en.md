@@ -154,13 +154,21 @@ voice” in Settings → Quick Read to restore spelling; the change applies to t
 next reading. The English model and regular document synthesis keep their
 existing text processing.
 
-Selection requires the application's UI Automation support. No automatic Ctrl+C
+Selection first uses the application's UI Automation support. No automatic Ctrl+C
 fallback is used: when selection is unavailable, copy explicitly and use
 Ctrl+Alt+V. Clipboard formats and the user's selection are never modified by
 Quick Read. Password controls are excluded; protected/elevated applications may
 be inaccessible. Pointer lookup uses physical screen coordinates on scaled displays.
 UIA extraction has a three-second timeout; Glagol cannot
 provide text that an application does not expose.
+
+**Notepad++:** an ordinary single selection uses a read-only Scintilla fallback
+when UI Automation does not expose text. UTF-8 and single-byte modes are supported;
+focus, selection and clipboard stay unchanged. For rectangular/multiple selections,
+other encodings or a range far into a large file, copy explicitly and use
+`Ctrl+Alt+V` or OCR. Direct reading is limited to a selection end within 2 MB and a
+prefix of at most 500,000 UTF-16 units. Only the selected range is spoken; the rest
+of the bounded prefix is discarded.
 
 **VS Code file editor:** if a visible selection produces “No readable text”,
 open VS Code Settings (`Ctrl+,`), find `editor.accessibilitySupport` and select
