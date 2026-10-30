@@ -285,8 +285,10 @@ mod tests {
     #[cfg(windows)]
     #[tokio::test]
     async fn unresponsive_process_times_out_and_is_terminated() {
-        let mut child = Command::new("powershell.exe")
-            .args(["-NoProfile", "-Command", "Start-Sleep -Seconds 30"])
+        // Native cmd waits on our open stdin without producing a response or
+        // spawning children. Keep this timeout fixture independent of .NET startup.
+        let mut child = Command::new("cmd.exe")
+            .args(["/D", "/Q", "/C", "set /p _glagol_timeout_fixture="])
             .creation_flags(0x08000000)
             .stdin(Stdio::piped())
             .stdout(Stdio::piped())

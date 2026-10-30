@@ -142,9 +142,11 @@ mod tests {
     #[cfg(windows)]
     #[tokio::test]
     async fn hung_provider_process_is_killed() {
-        let mut child = Command::new("powershell.exe")
-            .args(["-NoProfile", "-Command", "Start-Sleep -Seconds 30"])
-            .stdin(Stdio::null())
+        // Hold stdin open so native cmd blocks without .NET startup or children.
+        let mut child = Command::new("cmd.exe")
+            .args(["/D", "/Q", "/C", "set /p _glagol_source_timeout_fixture="])
+            .creation_flags(0x08000000)
+            .stdin(Stdio::piped())
             .stdout(Stdio::piped())
             .stderr(Stdio::null())
             .kill_on_drop(true)
