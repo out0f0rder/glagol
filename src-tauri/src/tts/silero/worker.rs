@@ -221,16 +221,25 @@ mod tests {
     use super::*;
     #[cfg(windows)]
     async fn pcm_fixture(header: &str, payload: &[u8]) -> Worker {
+        let directory =
+            std::env::temp_dir().join(format!("silero-pcm-test-{}", uuid::Uuid::new_v4()));
+        std::fs::create_dir(&directory).unwrap();
+        // Preseed only public protocol fixture bytes. cmd waits for the request,
+        // then streams them verbatim without a PowerShell/CLR dependency.
         let bytes = header
             .bytes()
             .chain(std::iter::once(b'\n'))
             .chain(payload.iter().copied())
-            .map(|b| b.to_string())
-            .collect::<Vec<_>>()
-            .join(",");
-        let script=format!("$null=[Console]::ReadLine(); $o=[Console]::OpenStandardOutput(); $b=[byte[]]@({bytes}); $o.Write($b,0,$b.Length); $o.Flush()");
-        let mut child = Command::new("powershell.exe")
-            .args(["-NoProfile", "-Command", &script])
+            .collect::<Vec<_>>();
+        std::fs::write(directory.join("fixture-pcm.bin"), bytes).unwrap();
+        let mut child = Command::new("cmd.exe")
+            .args([
+                "/D",
+                "/Q",
+                "/C",
+                "set /p _glagol_fixture_request= >nul & type fixture-pcm.bin",
+            ])
+            .current_dir(&directory)
             .creation_flags(0x08000000)
             .stdin(Stdio::piped())
             .stdout(Stdio::piped())
@@ -238,9 +247,6 @@ mod tests {
             .kill_on_drop(true)
             .spawn()
             .unwrap();
-        let directory =
-            std::env::temp_dir().join(format!("silero-pcm-test-{}", uuid::Uuid::new_v4()));
-        std::fs::create_dir(&directory).unwrap();
         Worker {
             model: &models::RU,
             input: child.stdin.take().unwrap(),
@@ -259,7 +265,12 @@ mod tests {
             good.synthesize_pcm("Test.", "xenia", true).await.unwrap(),
             vec![1, 32767]
         );
-        assert_eq!(std::fs::read_dir(&good.directory).unwrap().count(), 0);
+        let files = std::fs::read_dir(&good.directory)
+            .unwrap()
+            .map(|entry| entry.unwrap().file_name())
+            .collect::<Vec<_>>();
+        assert_eq!(files, vec![std::ffi::OsString::from("fixture-pcm.bin")]);
+        assert!(!good.directory.join("chunk.wav").exists());
         good.shutdown().await;
         for (header, data) in [
             (r#"{"pcm_bytes":5760002}"#, &[][..]),
