@@ -127,10 +127,10 @@ of the bounded prefix is discarded.
 In 7.3.3 on Windows, the message-history control exposed a list without
 TextPattern/TextPattern2; its whole-message selection is not a selected text
 range. Copy the desired fragment explicitly, then press `Ctrl+Alt+V`, or use
-`Ctrl+Alt+O` for an area. For a whole message, try pointing at it and pressing
-`Ctrl+Alt+E`; the result depends on Telegram's accessible label. The compose box
-is a different control with TextPattern support. These metadata checks did not
-read messages or confirm live reading with a foreground selection.
+`Ctrl+Alt+O` for an area. For a whole message, point at it and press `Ctrl+Alt+E`;
+a user confirmed this in Telegram Desktop 7.3.3 on Windows 11. The compose box is
+a different control with TextPattern support. The missing patterns were also
+confirmed with Telegram active, without reading message contents.
 
 **VS Code file editor:** if a visible selection produces “No readable text”,
 open VS Code Settings (`Ctrl+,`), find `editor.accessibilitySupport` and select
@@ -324,10 +324,10 @@ UIA отведены три секунды; Глагол не может пол�
 `Ctrl+Alt+R`. В 7.3.3 на Windows область переписки предоставляла список без
 TextPattern/TextPattern2; выбор целых сообщений не является диапазоном выделенного
 текста. Скопируйте нужный фрагмент явно и нажмите `Ctrl+Alt+V` либо используйте
-`Ctrl+Alt+O` для области. Для целого сообщения попробуйте навести указатель и
-нажать `Ctrl+Alt+E`; результат зависит от доступной подписи Telegram. Поле ввода —
-другой элемент с поддержкой TextPattern. Эти проверки свойств не читали сообщения
-и не подтверждают чтение активного выделения в Telegram.
+`Ctrl+Alt+O` для области. Для целого сообщения наведите указатель и нажмите `Ctrl+Alt+E`;
+это подтвердил пользователь в Telegram Desktop 7.3.3 на Windows 11. Поле ввода —
+другой элемент с поддержкой TextPattern. Отсутствие нужных интерфейсов
+подтверждено и в активном Telegram, без чтения содержимого сообщений.
 
 **VS Code, редактор файла:** если при видимом выделении появляется «Текст не найден»,
 откройте настройки VS Code (`Ctrl+,`), найдите `editor.accessibilitySupport` и

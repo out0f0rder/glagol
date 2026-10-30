@@ -80,11 +80,15 @@ UTF-16 slice. Не меняет clipboard/фокус/выделение, не и
 
 У установленного Telegram7.3.3.0 metadata probe показал HistoryInner (List) без
 TextPattern/TextPattern2; у Ui::InputField::Inner TextPattern есть, один collapsed
-range. Telegram был не foreground: чтение конкретного активного выделения не
-подтверждено. Содержание/подписи/значения сообщений и clipboard не читались; фокус и буфер
-не менялись. Не добавлялся несуществующий native read-selection protocol.
-Ctrl+C явно + Ctrl+Alt+V или OCR — доступные пути; E под указателем зависит от
-подписи Telegram и вручную здесь ещё не проверено. Код/EXE остаются fc44db3;
+range. Первый замер был не foreground. После уточнения пользователя
+Desktop/message проверка активного Telegram подтвердила: focused row ListItem
+и parent HistoryInner не предоставляют TextPattern/TextPattern2; SelectionPattern
+списка возвращает 0 whole items, что не является диапазоном выделения символов.
+Диагностика не читала содержимое/подписи/значения сообщений и clipboard; фокус
+и буфер не менялись. Не добавлялся несуществующий native read-selection protocol.
+Ctrl+C явно + Ctrl+Alt+V или OCR — пути для фрагмента. Пользователь отдельно
+подтвердил чтение целого сообщения под указателем через Ctrl+Alt+E: manual PASS.
+Код/EXE остаются fc44db3;
 диагностика и инструкции не требуют новой сборки. Primary v7.3.3 source показывает
 message rows как ListItem, что согласуется с наблюдением; это не TextPattern range.
 

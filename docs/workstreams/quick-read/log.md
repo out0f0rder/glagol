@@ -230,3 +230,23 @@ Primary pinned source: https://raw.githubusercontent.com/telegramdesktop/tdeskto
 ## 2026-10-30T09:47:46.470Z — T: диагностический шаг закрыт
 
 context:refresh exit0; runbook:check exit0 «runbook-check OK (14 series)»; diff whitespace check exit0. T done означает исследована совместимость области переписки (native metadata + primary source), НЕ исправлено чтение произвольного выделения Telegram. Активное выделение/полевой R/E/звук остаются telegram-live NOT_RUN; в финальном ответе область сообщения/Desktop отделена от поля ввода и Web. Claim очищен, NEXT O отложен пользователем. Код/EXE/установщик остаются проверенными на M fc44db3; текущий commit только документация/диагностика.
+
+## 2026-10-30T10:33:10.133Z — T повторно занят после ответа пользователя
+
+Пользователь уточнил: Telegram Desktop — текст сообщения, в ответ на просьбу оставить неперсональное выделение активным. До изменений сверено clean Git local c5072ca, предыдущие docs/код commits на месте. T вновь in_progress с новым claim; прежние background metadata результаты сохраняются как история, не заменяют foreground probe. Дальше только свойства фокуса/point/patterns, без Name/Value/GetText сообщения.
+
+## 2026-10-30T10:34:39.573Z — T: foreground metadata подтверждены
+
+Прямой .scratch/telegram-foreground-probe.ps1 через env PATHEXT=... powershell -Command, exit0. Telegram7.3.3.0 foreground=true. Focused virtual message ListItem role50007 (class empty), password=false, TextPattern/TextPattern2=false. Parent HistoryInner role50008 List, focus=true, тоже без TextPattern/TextPattern2. Под указателем virtual ListItem с теми же patterns; его parent — HistoryInner. Исправлен .NET metadata query whole items: SelectionPattern.Current.GetSelection(), count0 (прошлая попытка вызывала метод не у Current и дала ошибку wrapper; не баг Telegram). Это число не означает отсутствия визуального character selection: модели выделения разные.
+
+Ни Name/Value/GetText сообщения, ни clipboard не читались; keys/focus не менялись. Главный код не изменён. Пользователю предложен manual Ctrl+Alt+E под указателем для целого сообщения; ожидаем отдельный ответ, без автоматического speech trigger. Новое свидетельство active UIA patterns обновлено в обеих README/USER_GUIDE и report; фоновый замер T остаётся датированной историей.
+
+## 2026-10-30T10:35:53.613Z — T: manual pointer E PASS
+
+Пользователь в ответ на точную процедуру «навести указатель на сообщение Telegram и нажать Ctrl+Alt+E» подтвердил: «Да, сообщение читается». Manual PASS целого сообщения под указателем; никакого PASS selected substring R, compose box/Web или фокуса/latency не добавляется. Диагностика сама текст не получала и speech не запускала; чтение инициировал пользователь штатной командой работающей QA копии.
+
+Обе README/USER_GUIDE, CHANGELOG, report/manual-qa/workstream README обновлены: для целого сообщения pointer E подтверждён; для фрагмента explicit copy+V/OCR. Продуктовый код прежний fc44db3, новой сборки/установки нет. pnpm runbook:test exit0,49pass/0fail,7071ms. Далее context refresh/check и закрытие T с этим новым свидетельством, O остаётся deferred.
+
+## 2026-10-30T10:36:43.507Z — T закрыт после foreground и manual E
+
+context:refresh/runbook:check exit0,14series; git diff --check exit0. Обязательные diagnosis/foreground-metadata/telegram-live(E)/context PASS. Это подтверждённый доступный путь для whole-message и объяснение ограничения R, не новый substring fallback. Claim очищен, NEXT O остаётся deferred. Сохраняется отдельный docs commit; новый EXE/NSIS не нужен.

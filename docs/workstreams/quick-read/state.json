@@ -635,9 +635,39 @@
       ],
       "required": [
         "diagnosis",
-        "context"
+        "context",
+        "foreground-metadata",
+        "telegram-live"
       ],
       "checks": [
+        {
+          "id": "foreground-metadata",
+          "status": "PASS",
+          "method": "command",
+          "command": "env PATHEXT='.COM;.EXE;.BAT;.CMD' powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command '& \"I:\\_AI\\glagol\\.scratch\\telegram-foreground-probe.ps1\"' < /dev/null > /tmp/glagol-telegram-foreground.log 2>&1",
+          "cwd": ".",
+          "at": "2026-10-30T10:34:39.573Z",
+          "environment": {
+            "runtime": "Windows11; Telegram7.3.3.0 active; metadata only;96nodes/depth9/20s deadline"
+          },
+          "exit_code": 0,
+          "output": "foreground=true; focus/pointer virtual ListItem role50007 and parent HistoryInner lack TextPattern/TextPattern2; parent SelectionPattern.Current.GetSelection count0. No message Name/Value/GetText, clipboard or focus mutation.",
+          "evidence": "docs/workstreams/quick-read/log.md"
+        },
+        {
+          "id": "telegram-live",
+          "status": "PASS",
+          "method": "manual",
+          "command": "Telegram Desktop: навести указатель на текст сообщения и нажать Ctrl+Alt+E",
+          "cwd": ".",
+          "at": "2026-10-30T10:35:53.613Z",
+          "environment": {
+            "runtime": "Windows11; Telegram7.3.3.0"
+          },
+          "exit_code": null,
+          "output": "Пользователь: Да, сообщение читается. Manual PASS whole-message pointer reading only; substring R, compose and Web not covered.",
+          "evidence": "docs/workstreams/quick-read/log.md"
+        },
         {
           "id": "diagnosis",
           "status": "PASS",
@@ -658,26 +688,12 @@
           "method": "command",
           "command": "pnpm runbook:test; pnpm context:refresh; pnpm runbook:check; git diff --check",
           "cwd": ".",
-          "at": "2026-10-30T09:47:46.470Z",
+          "at": "2026-10-30T10:36:43.507Z",
           "environment": {
             "runtime": "WSL Node24.13.0/pnpm12.16.1"
           },
           "exit_code": 0,
-          "output": "49 runbook tests PASS; context write OK; runbook-check OK(14series); git diff --check exit0. No application code changes or rebuild.",
-          "evidence": "docs/workstreams/quick-read/log.md"
-        },
-        {
-          "id": "telegram-live",
-          "status": "NOT_RUN",
-          "method": "manual",
-          "command": "Telegram Desktop: оставить выделение сообщения в активном окне и проверить R/E; поле ввода проверить отдельно",
-          "cwd": ".",
-          "at": "2026-10-30T09:46:55.515Z",
-          "environment": {
-            "runtime": "Windows11; Telegram7.3.3.0"
-          },
-          "exit_code": null,
-          "output": "Задан вопрос message/input/browser и просьба оставить неперсональное выделение. Ответа пока нет; metadata foreground=false, тексты не считывались.",
+          "output": "49runbook tests PASS/0failed,7071ms; context write/check exit0,14series; git diff --check exit0. Documentation only; no application rebuild.",
           "evidence": "docs/workstreams/quick-read/log.md"
         }
       ]

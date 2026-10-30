@@ -13,7 +13,7 @@
 
 Последний завершённый шаг серии: **T — Диагностика чтения выделения Telegram**.
 
-Проверка 2026-10-30T09:46:55.515Z: HistoryInner List,TextPattern/TextPattern2=false; InputField::Inner TextPattern=true,1 collapsed range. Telegram foreground=false; this does not confirm live selection/reading. Name/Value/GetText not queried. Pinned upstream v7.3.3 message-list model agrees. ([evidence](../docs/workstreams/quick-read/log.md)).
+Проверка 2026-10-30T10:34:39.573Z: foreground=true; focus/pointer virtual ListItem role50007 and parent HistoryInner lack TextPattern/TextPattern2; parent SelectionPattern.Current.GetSelection count0. No message Name/Value/GetText, clipboard or focus mutation. ([evidence](../docs/workstreams/quick-read/log.md)).
 
 ## Доставка и наблюдения
 

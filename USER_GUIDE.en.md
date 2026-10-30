@@ -179,10 +179,10 @@ of the bounded prefix is discarded.
 In 7.3.3 on Windows, the message-history control exposed a list without
 TextPattern/TextPattern2; its whole-message selection is not a selected text
 range. Copy the desired fragment explicitly, then press `Ctrl+Alt+V`, or use
-`Ctrl+Alt+O` for an area. For a whole message, try pointing at it and pressing
-`Ctrl+Alt+E`; the result depends on Telegram's accessible label. The compose box
-is a different control with TextPattern support. These metadata checks did not
-read messages or confirm live reading with a foreground selection.
+`Ctrl+Alt+O` for an area. For a whole message, point at it and press `Ctrl+Alt+E`;
+a user confirmed this in Telegram Desktop 7.3.3 on Windows 11. The compose box is
+a different control with TextPattern support. The missing patterns were also
+confirmed with Telegram active, without reading message contents.
 
 **VS Code file editor:** if a visible selection produces “No readable text”,
 open VS Code Settings (`Ctrl+,`), find `editor.accessibilitySupport` and select

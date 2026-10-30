@@ -65,3 +65,9 @@ file editor; terminal/chat/webview/multi-cursor этим не проверены
 Фактический вход в Windows, OS disable и uninstall NOT_RUN.
 Крестик (16), manual на кандидате M PID9020: пользователь подтвердил скрытие с
 продолжением речи, Ctrl+Alt+P/S и появление при новом чтении: «Да, всё работает».
+
+Telegram Desktop7.3.3, 2026-10-30: пользователь уточнил проблему именно в тексте
+сообщения; active metadata focus/pointer row и HistoryInner без TextPattern.
+Отдельный manual Ctrl+Alt+E под указателем: «Да, сообщение читается» — PASS
+чтения целого сообщения. Character selection через R не исправлялось; compose
+box и Telegram Web этим не проверены. Диагностика не считывала содержимое сообщений.
