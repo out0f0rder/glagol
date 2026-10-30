@@ -13,6 +13,8 @@ the per-session master logs under [`docs/day-logs/`](docs/day-logs/).
 
 ### Documentation
 
+- Documented Telegram Desktop message-selection limitations and clipboard/OCR alternatives; the compose box is checked separately. / Описаны ограничения чтения выделения сообщений Telegram Desktop и варианты через буфер/OCR; поле ввода проверяется отдельно.
+
 - Added the VS Code selection setup: enable `editor.accessibilitySupport: on` when its editor exposes an empty UIA selection; the reading was confirmed on Windows 11. / Добавлена настройка чтения выделения VS Code: включить `editor.accessibilitySupport: on`, если редактор передаёт пустой диапазон UIA; работа подтверждена на Windows 11.
 
 ### Fixed

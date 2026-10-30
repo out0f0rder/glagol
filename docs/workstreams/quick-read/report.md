@@ -76,6 +76,18 @@ UTF-16 slice. Не меняет clipboard/фокус/выделение, не и
 Поддержаны один stream selection и UTF-8/SBCS; rectangle/multiple/DBCS либо prefix
 за пределом 2MB bytes/500k UTF-16 требуют явного copy/read clipboard или OCR.
 
+## Telegram Desktop — диагностика 2026-10-30
+
+У установленного Telegram7.3.3.0 metadata probe показал HistoryInner (List) без
+TextPattern/TextPattern2; у Ui::InputField::Inner TextPattern есть, один collapsed
+range. Telegram был не foreground: чтение конкретного активного выделения не
+подтверждено. Содержание/подписи/значения сообщений и clipboard не читались; фокус и буфер
+не менялись. Не добавлялся несуществующий native read-selection protocol.
+Ctrl+C явно + Ctrl+Alt+V или OCR — доступные пути; E под указателем зависит от
+подписи Telegram и вручную здесь ещё не проверено. Код/EXE остаются fc44db3;
+диагностика и инструкции не требуют новой сборки. Primary v7.3.3 source показывает
+message rows как ListItem, что согласуется с наблюдением; это не TextPattern range.
+
 ## Артефакт и ограничения
 
 Установщик M: `.scratch/quick-read-dist/Glagol_0.6.1_x64-setup.exe`,

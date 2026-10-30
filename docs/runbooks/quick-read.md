@@ -168,3 +168,14 @@ suppression. Никаких replace/stop/pause из hide. Регрессия п�
 PCM, сохранение pause/cancellation generation и видимость при повторных updates.
 Manual: длинный текст → × → речь продолжается, окно скрыто; Ctrl+Alt+P и S работают;
 новый R показывает окно по настройке без активации. Звук/GUI не выводятся из unit PASS.
+
+## Telegram Desktop
+
+Metadata-only: verify Telegram version, foreground flag, class/control type,
+password and supported pattern IDs. Never read Name/Value/GetText/messages in
+diagnostics. Bound node count/depth and helper lifetime. In 7.3.3: HistoryInner
+was List/TextPattern=false/TextPattern2=false; Ui::InputField::Inner had
+TextPattern=true and a collapsed range. Whole-item SelectionPattern is distinct
+from TextPattern.GetSelection; do not substitute a whole message for a selected
+substring. Foreground text-selection and pointer/audio checks remain manual.
+Explicit copy + Ctrl+Alt+V or OCR are alternatives; no automatic Ctrl+C.

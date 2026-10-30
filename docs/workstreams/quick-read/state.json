@@ -627,6 +627,62 @@
       ]
     },
     {
+      "id": "T",
+      "title": "Диагностика чтения выделения Telegram",
+      "status": "done",
+      "depends_on": [
+        "M"
+      ],
+      "required": [
+        "diagnosis",
+        "context"
+      ],
+      "checks": [
+        {
+          "id": "diagnosis",
+          "status": "PASS",
+          "method": "command",
+          "command": "env PATHEXT='.COM;.EXE;.BAT;.CMD' powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command '& \"I:\\_AI\\glagol\\.scratch\\telegram-metadata-probe.ps1\"' < /dev/null > /tmp/glagol-telegram-metadata.log 2>&1",
+          "cwd": ".",
+          "at": "2026-10-30T09:46:55.515Z",
+          "environment": {
+            "runtime": "Windows11; Telegram7.3.3.0; bounded metadata only,96nodes/depth9,20s watchdog"
+          },
+          "exit_code": 0,
+          "output": "HistoryInner List,TextPattern/TextPattern2=false; InputField::Inner TextPattern=true,1 collapsed range. Telegram foreground=false; this does not confirm live selection/reading. Name/Value/GetText not queried. Pinned upstream v7.3.3 message-list model agrees.",
+          "evidence": "docs/workstreams/quick-read/log.md"
+        },
+        {
+          "id": "context",
+          "status": "PASS",
+          "method": "command",
+          "command": "pnpm runbook:test; pnpm context:refresh; pnpm runbook:check; git diff --check",
+          "cwd": ".",
+          "at": "2026-10-30T09:47:46.470Z",
+          "environment": {
+            "runtime": "WSL Node24.13.0/pnpm12.16.1"
+          },
+          "exit_code": 0,
+          "output": "49 runbook tests PASS; context write OK; runbook-check OK(14series); git diff --check exit0. No application code changes or rebuild.",
+          "evidence": "docs/workstreams/quick-read/log.md"
+        },
+        {
+          "id": "telegram-live",
+          "status": "NOT_RUN",
+          "method": "manual",
+          "command": "Telegram Desktop: оставить выделение сообщения в активном окне и проверить R/E; поле ввода проверить отдельно",
+          "cwd": ".",
+          "at": "2026-10-30T09:46:55.515Z",
+          "environment": {
+            "runtime": "Windows11; Telegram7.3.3.0"
+          },
+          "exit_code": null,
+          "output": "Задан вопрос message/input/browser и просьба оставить неперсональное выделение. Ответа пока нет; metadata foreground=false, тексты не считывались.",
+          "evidence": "docs/workstreams/quick-read/log.md"
+        }
+      ]
+    },
+    {
       "id": "O",
       "title": "Отложенная ручная проверка чтения и OCR без сети",
       "status": "pending",

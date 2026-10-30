@@ -11,9 +11,9 @@
 
 [Решения](workstreams/quick-read/README.md) · [Состояние](workstreams/quick-read/state.json) · [Журнал](workstreams/quick-read/log.md)
 
-Последний завершённый шаг серии: **M — Крестик мини-плеера скрывает окно без остановки чтения**.
+Последний завершённый шаг серии: **T — Диагностика чтения выделения Telegram**.
 
-Проверка 2026-10-30T09:29:13.334Z: fmt/clippy exit0;368passed,0failed,8ignored,5.31s; includes two hide regressions ([evidence](../docs/workstreams/quick-read/log.md)).
+Проверка 2026-10-30T09:46:55.515Z: HistoryInner List,TextPattern/TextPattern2=false; InputField::Inner TextPattern=true,1 collapsed range. Telegram foreground=false; this does not confirm live selection/reading. Name/Value/GetText not queried. Pinned upstream v7.3.3 message-list model agrees. ([evidence](../docs/workstreams/quick-read/log.md)).
 
 ## Доставка и наблюдения
 
