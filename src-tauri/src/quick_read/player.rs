@@ -185,6 +185,35 @@ fn fill<T: Copy>(
 mod tests {
     use super::*;
     #[test]
+    fn dismissing_player_preserves_pcm_position_pause_and_generation() {
+        let q = super::super::QuickRead::default();
+        let changes = q.changes.subscribe();
+        {
+            let mut b = q.buffer.lock().unwrap();
+            b.reset(7);
+            b.snapshot.phase = "preparing".into();
+            b.push(0, vec![16384, 8192, 4096]).unwrap();
+            assert_eq!(b.sample(1.0), 0.5);
+        }
+        q.dismiss_player();
+        assert_eq!(*q.dismissed_player.lock().unwrap(), Some(7));
+        assert!(!changes.has_changed().unwrap());
+        {
+            let mut b = q.buffer.lock().unwrap();
+            assert_eq!(b.snapshot.generation, 7);
+            assert_eq!(b.snapshot.phase, "playing");
+            assert!(!b.snapshot.paused);
+            assert_eq!(b.sample(1.0), 0.25);
+            b.snapshot.paused = true;
+        }
+        q.dismiss_player();
+        let mut b = q.buffer.lock().unwrap();
+        assert!(b.snapshot.paused);
+        assert_eq!(b.sample(1.0), 0.0);
+        b.snapshot.paused = false;
+        assert_eq!(b.sample(1.0), 0.125);
+    }
+    #[test]
     fn bounded_pause_resume_replacement_and_order() {
         let mut b = Buffer::default();
         b.reset(1);

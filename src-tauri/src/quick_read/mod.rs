@@ -28,6 +28,7 @@ pub struct QuickRead {
     pub shortcuts: Mutex<shortcuts::Bindings>,
     pub hotkey_gate: tokio::sync::Mutex<()>,
     pub show_player: AtomicBool,
+    dismissed_player: Mutex<Option<u64>>,
     pub phonetic_english: AtomicBool,
     pub region: Mutex<Option<surface::Region>>,
     pub capture_generation: AtomicU64,
@@ -45,6 +46,7 @@ impl Default for QuickRead {
             shortcuts: Mutex::new(Default::default()),
             hotkey_gate: tokio::sync::Mutex::new(()),
             show_player: AtomicBool::new(false),
+            dismissed_player: Mutex::new(None),
             phonetic_english: AtomicBool::new(true),
             region: Mutex::new(None),
             capture_generation: AtomicU64::new(0),
@@ -52,6 +54,10 @@ impl Default for QuickRead {
     }
 }
 impl QuickRead {
+    fn dismiss_player(&self) {
+        let generation = self.buffer.lock().unwrap().snapshot.generation;
+        *self.dismissed_player.lock().unwrap() = Some(generation);
+    }
     fn replace(&self) -> u64 {
         let mut b = self.buffer.lock().unwrap();
         let id = b.snapshot.generation.wrapping_add(1);

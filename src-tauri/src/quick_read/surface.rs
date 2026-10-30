@@ -92,18 +92,41 @@ pub fn setup(app: &tauri::AppHandle) -> Result<(), String> {
         .map_err(|e| e.to_string())?;
     Ok(())
 }
-/// Called by the existing state reporter. Errors remain visible even with the player hidden.
+fn should_show_player(
+    state: &Snapshot,
+    enabled: bool,
+    dismissed: Option<u64>,
+    capturing: bool,
+) -> bool {
+    !capturing
+        && dismissed != Some(state.generation)
+        && ((enabled && state.phase != "idle") || state.error.is_some())
+}
+/// Hide this reading's surface without changing playback or the saved preference.
+#[tauri::command]
+pub fn quick_read_hide_player(app: tauri::AppHandle) -> Result<(), String> {
+    app.state::<QuickRead>().dismiss_player();
+    if let Some(player) = app.get_webview_window("quick-player") {
+        player.hide().map_err(|e| e.to_string())?;
+    }
+    Ok(())
+}
+/// Called by the existing state reporter. Errors may appear with the preference off,
+/// but dismissing the current reading keeps its surface hidden.
 pub fn update(app: &tauri::AppHandle, state: &Snapshot) {
     let q = app.state::<QuickRead>();
     let Some(player) = app.get_webview_window("quick-player") else {
         return;
     };
-    let show = q
-        .capture_generation
-        .load(std::sync::atomic::Ordering::Relaxed)
-        == 0
-        && ((q.show_player.load(std::sync::atomic::Ordering::Relaxed) && state.phase != "idle")
-            || state.error.is_some());
+    let dismissed = *q.dismissed_player.lock().unwrap();
+    let show = should_show_player(
+        state,
+        q.show_player.load(std::sync::atomic::Ordering::Relaxed),
+        dismissed,
+        q.capture_generation
+            .load(std::sync::atomic::Ordering::Relaxed)
+            != 0,
+    );
     if show {
         if !player.is_visible().unwrap_or(false) {
             if let Some(monitor) = app
@@ -245,6 +268,29 @@ async fn finish_impl(
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn dismissed_reading_stays_hidden_until_new_request_or_explicit_enable() {
+        let mut state = Snapshot {
+            generation: 7,
+            phase: "playing".into(),
+            ..Default::default()
+        };
+        assert!(should_show_player(&state, true, None, false));
+        assert!(!should_show_player(&state, true, Some(7), false));
+        state.paused = true;
+        state.phase = "preparing".into();
+        state.error = Some("test error".into());
+        assert!(!should_show_player(&state, true, Some(7), false));
+        assert!(!should_show_player(&state, false, Some(7), false));
+        state.generation = 8;
+        assert!(should_show_player(&state, true, Some(7), false));
+        assert!(!should_show_player(&state, true, Some(7), true));
+        state.error = None;
+        assert!(!should_show_player(&state, false, Some(7), false));
+        assert!(should_show_player(&state, true, None, false));
+        state.phase = "idle".into();
+        assert!(!should_show_player(&state, true, None, false));
+    }
     #[test]
     fn dpi_negative_monitor_reverse_drag_and_clipping() {
         let r = Region {

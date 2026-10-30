@@ -237,6 +237,7 @@ pub fn run() {
             quick_read::settings::quick_read_settings,
             quick_read::settings::quick_read_set_shortcut,
             quick_read::settings::quick_read_set_option,
+            quick_read::surface::quick_read_hide_player,
             quick_read::surface::quick_read_region,
             quick_read::surface::quick_read_ocr_cancel,
             quick_read::surface::quick_read_ocr_finish,

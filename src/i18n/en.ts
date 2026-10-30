@@ -56,6 +56,7 @@ export const en = {
   qrStop: "Stop reading",
   qrPrevious: "Previous sentence",
   qrNext: "Next sentence",
+  qrHidePlayer: "Hide mini-player",
   qrShowPlayer: "Show mini-player during reading (does not take focus)",
   qrPhoneticEnglish: "Read English words with the Russian voice",
   qrPhoneticNote: "Approximate pronunciation on the fly: Quick Read → квик рид. Enabled by default for Russian Quick Read; abbreviations keep letter names. Turn off to spell words. Applies to the next reading.",

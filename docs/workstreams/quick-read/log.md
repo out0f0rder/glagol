@@ -180,3 +180,29 @@ Metadata-only UIA probe (Windows PS5.1, exit0) на оставленном по�
 N обязательные проверки PASS: Rust fmt/clippy,366 unit tests/0failed/8ignored (5.30s), TSC/Vite289keys3m56s,49 runbook и3 i18n tests. Native manual Notepad++ чтение только выделенного подтверждено пользователем. NSIS с завершённым N frontend: release50.63s, exit0, 10408814bytes, SHA256 191a7a37678da7e5607ae2e77bff522a8e79e8e41dc38ed1ad55446783aa478d, built 2026-10-30T09:15:12.021834+00:00; source ещё dirty N поверх aaa6b34. Артефакт скопирован в quick-read-dist с metadata/hash, не установлен/опубликован. Сложные режимы/DBCS/повышенные процессы/пределы реальных крупных файлов остаются непроверенными вручную и документированными.
 
 M занят перед изменениями: X должен только скрыть окно текущего поколения, PCM/позиция/пауза/настройка show-player сохраняются. Следующий запрос снова показывает плеер по настройке; stop остаётся отдельной кнопкой/горячей клавишей. Исходники N сначала сохраняются отдельным commit; затем M. O offline по-прежнему deferred.
+
+## 2026-10-30T09:21:26.563432+00:00 — M реализован, проверки выполняются
+
+После сверки Git: N сохранён local 0135dfd, дерево до M чистое; claim M актуален. X вызывает отдельную hide command. В памяти сохраняется dismissed generation, reporter не показывает тот же запрос снова; новое поколение/явное включение show-player возвращает обычную видимость. Нет stop/replace/cancel/PCM mutation и изменений постоянной настройки из hide. Два регрессионных теста проверяют продолжение PCM с прежней позиции, pause/cancellation generation и visibility при повторных состояниях/OCR/errors/new request. EN/RU UI label и оба USER_GUIDE/README/CHANGELOG/runbook обновлены. Rust и frontend gates выполняются; NSIS ещё NOT_RUN для M.
+
+## 2026-10-30T09:26:36.329331+00:00 — M автоматические гейты PASS, NSIS выполняется
+
+Windows Rust1.99.1, per-child PATHEXT=.COM;.EXE;.BAT;.CMD: .scratch/check.cmd fmt --manifest-path src-tauri/Cargo.toml --check и clippy --all-targets -- -D warnings exit0 (7.87s); cargo test exit0:368passed,0failed,8ignored,5.31s. Ignored не запускались. WSL Node24.13.0/pnpm12.16.1: pnpm exec tsc --noEmit exit0; pnpm build exit0,290 matching i18n keys,Vite3m53s,1934modules,обычное предупреждение chunk>500kB. pnpm runbook:test49PASS, pnpm i18n:test3PASS; context:refresh/runbook:check exit0,14series; git diff --check exit0. Логи выполнения: /tmp/glagol-m-{clippy,test,tsc,frontend,runbook-test,i18n-test}.log.
+
+После завершённого frontend запущена env PATHEXT=... cmd.exe /d /c .scratch/bundle.cmd: NSIS ещё выполняется. Исходники кода с начала сборки не меняются. Ручной X/звук пока NOT_RUN; unit PCM не выдаётся за реальное прослушивание.
+
+## 2026-10-30T09:28:42.245802+00:00 — M завершён: сборка и ручная приёмка
+
+После завершённого frontend Tauri CLI NSIS exit0: release43.64s, Finished1bundle. 10404735bytes, SHA256 cf92cc655d3a2719365bcc42bdfa0b6eadbc7154b5cab8421e761a95c2e179d7, built 2026-10-30T09:27:04.029932+00:00; код M поверх local0135dfd до commit, без последующих изменений исходников. Установщик и SHA256SUMS/build.json скопированы в .scratch/quick-read-dist. Не подписан для updater, не установлен, не опубликован.
+
+Точная QA копия .scratch/quick-read-current/glagol.exe обновлена с проверкой прежнего PID34572/path, скрыто запущена --tray; readiness startup visibility applied observed, новый PID9020, команда exit0. Пользователь проверил длинное чтение → ×, сохранение речи/скрытие, Ctrl+Alt+P/S и появление при новом чтении: «Да, всё работает» — manual PASS. Это не измерение latency, не проверка сети или второго монитора.
+
+M required fmt/clippy/test, TSC/frontend, NSIS и context PASS; claim очищен, NEXT O pending — offline отложен пользователем, его не запрашиваем повторно. Обе README/USER_GUIDE/CHANGELOG/runbook и итоговый report обновлены. Последующий checkpoint контекста и локальный commit завершают текущую работу; установка/login/release не выполняются.
+
+## 2026-10-30T09:29:13.334Z — исправление формата финального checkpoint
+
+Предыдущий pnpm context:refresh exit0, но runbook:check exit1: project observed_at must be UTC ISO; series quick-read rust command/output/UTC date required. Новые timestamps ошибочно имели Python +00:00/microseconds вместо требуемого UTC Z/milliseconds. Исправлены только новые structured dates M/project, валидатор не менялся. Предыдущее сообщение о final consistency PASS относится к более ранней успешной проверке; закрывающая проверка повторяется сейчас. Код/NSIS/ручная приёмка не менялись.
+
+## 2026-10-30T09:29:42.735Z — финальный гейт контекста PASS
+
+После исправления дат context:refresh exit0, runbook:check exit0 «runbook-check OK (14 series)», git diff --check exit0. Дополнительных исходниковых изменений после NSIS нет. Локальный M commit включает код/регрессии, EN/RU инструкции и фактическую ручную приёмку; NEXT O сохраняется pending по решению пользователя.

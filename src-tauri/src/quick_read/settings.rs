@@ -139,8 +139,11 @@ pub fn quick_read_set_option(
     repository::set_setting(&db, persist, &value, chrono::Utc::now().timestamp_millis())
         .map_err(|e| e.to_string())?;
     if key == "player" {
-        app.state::<QuickRead>()
-            .show_player
+        let q = app.state::<QuickRead>();
+        if value == "1" {
+            *q.dismissed_player.lock().unwrap() = None;
+        }
+        q.show_player
             .store(value == "1", std::sync::atomic::Ordering::Relaxed);
     } else if key == "phonetic_english" {
         app.state::<QuickRead>()

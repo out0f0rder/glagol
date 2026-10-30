@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { listen } from "@tauri-apps/api/event";
 import { Pause, Play, Square, SkipBack, SkipForward, X } from "lucide-react";
 import { useI18n } from "@/contexts/PreferencesContext";
-import { getQuickReadState, quickReadAction, setQuickReadSpeed, type QuickReadAction, type QuickReadState } from "@/lib/tauri";
+import { getQuickReadState, hideQuickReadPlayer, quickReadAction, setQuickReadSpeed, type QuickReadAction, type QuickReadState } from "@/lib/tauri";
 export function MiniPlayer() {
   const { t, locale } = useI18n();
   const [state, setState] = useState<QuickReadState | null>(null);
@@ -17,7 +17,7 @@ export function MiniPlayer() {
   return <div className="m-1 rounded-xl bg-zinc-900/95 p-3 text-white shadow-lg" role="region" aria-label={t("qrTitle")}>
     <div className="flex items-center justify-between gap-2 text-xs">
       <span>{t("qrTitle")}{state && state.total > 0 ? ` · ${state.current + 1}/${state.total}` : ""}{state?.phase === "preparing" || state?.phase === "extracting" ? ` · ${t("qrPreparing")}` : ""}</span>
-      <button type="button" className={button} aria-label={t("qrStop")} onClick={() => action("stop")}><X size={14} /></button>
+      <button type="button" className={button} aria-label={t("qrHidePlayer")} title={t("qrHidePlayer")} onClick={() => void hideQuickReadPlayer().catch(() => undefined)}><X size={14} /></button>
     </div>
     {state?.error ? <p role="alert" className="line-clamp-3 text-xs text-red-200" title={state.error}>{state.error}</p> : <div className="flex items-center justify-between gap-1">
       <button type="button" className={button} aria-label={t("qrPrevious")} onClick={() => action("previous")}><SkipBack size={18} /></button>

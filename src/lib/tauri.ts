@@ -572,6 +572,7 @@ export const setLaunchAtLogin = (enabled: boolean) => invoke<void>("set_launch_a
 export const setStartInTray = (enabled: boolean) => invoke<void>("set_start_in_tray", { enabled });
 export interface QuickReadRegion { generation: number; x: number; y: number; width: number; height: number; scale: number }
 export const quickReadAction = (action: QuickReadAction) => invoke<void>("quick_read_action", { action });
+export const hideQuickReadPlayer = () => invoke<void>("quick_read_hide_player");
 export const getQuickReadState = () => invoke<QuickReadState>("quick_read_state");
 export const getQuickReadSettings = () => invoke<QuickReadSettings>("quick_read_settings");
 export const setQuickReadShortcut = (action: string, shortcut: string) => invoke<void>("quick_read_set_shortcut", { action, shortcut });

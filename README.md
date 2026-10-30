@@ -94,6 +94,11 @@ speed; changing speed also changes pitch. Long sentences can span several
 fragments; jumping synthesizes the target again. Errors appear briefly without
 opening the main window. A cold Silero worker still needs time to load.
 
+The × button hides the mini-player for the current reading; speech and pause
+position are preserved. Use ■ or Ctrl+Alt+S to stop. A new reading shows it again
+if enabled in Settings. To restore it during the same reading, turn “Show
+mini-player” off and on in Settings; closing it does not change that preference.
+
 Russian Quick Read approximates English words on the fly using the same selected
 Russian voice: `Quick Read` → «квик рид». Lightweight rules and built-in exceptions
 need no downloads; names and irregular words may sound inaccurate. Abbreviations
@@ -274,6 +279,12 @@ the development machine; importing pinned files was exercised separately.
 может занимать несколько фрагментов; переход синтезирует целевой фрагмент заново.
 Ошибки появляются ненадолго без открытия главного окна. Холодному движку Silero
 нужно время на загрузку.
+
+Кнопка × скрывает мини-плеер на время текущего чтения; речь и позиция паузы
+сохраняются. Для остановки используйте ■ или Ctrl+Alt+S. При новом чтении плеер
+снова появляется, если включён в настройках. Чтобы вернуть его во время того же
+чтения, выключите и включите «Показывать мини-плеер» в настройках; крестик эту
+настройку не меняет.
 
 В русском быстром чтении английские слова по умолчанию получают приблизительное
 русское произношение на лету: `Quick Read` → «квик рид», тем же выбранным голосом.

@@ -3,13 +3,9 @@
   "id": "quick-read",
   "title": "Быстрое чтение Windows",
   "status": "active",
-  "next": "M",
+  "next": "O",
   "reason": null,
-  "claim": {
-    "owner": "codex",
-    "at": "2026-10-30T09:16:58.827Z",
-    "branch": "feat/quick-read"
-  },
+  "claim": null,
   "links": [
     "docs/workstreams/quick-read/README.md",
     "docs/workstreams/quick-read/log.md",
@@ -533,7 +529,7 @@
     {
       "id": "M",
       "title": "Крестик мини-плеера скрывает окно без остановки чтения",
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "N"
       ],
@@ -543,7 +539,92 @@
         "nsis",
         "context"
       ],
-      "checks": []
+      "checks": [
+        {
+          "id": "rust",
+          "status": "PASS",
+          "method": "command",
+          "command": "env PATHEXT='.COM;.EXE;.BAT;.CMD' cmd.exe /d /c 'I:\\_AI\\glagol\\.scratch\\check.cmd fmt --manifest-path src-tauri/Cargo.toml --check'; env PATHEXT='.COM;.EXE;.BAT;.CMD' cmd.exe /d /c 'I:\\_AI\\glagol\\.scratch\\check.cmd clippy --manifest-path src-tauri/Cargo.toml --all-targets -- -D warnings'; env PATHEXT='.COM;.EXE;.BAT;.CMD' cmd.exe /d /c 'I:\\_AI\\glagol\\.scratch\\check.cmd test --manifest-path src-tauri/Cargo.toml'",
+          "cwd": ".",
+          "at": "2026-10-30T09:29:13.334Z",
+          "environment": {
+            "runtime": "Windows11; Rust1.99.1; per-child PATHEXT override"
+          },
+          "exit_code": 0,
+          "output": "fmt/clippy exit0;368passed,0failed,8ignored,5.31s; includes two hide regressions",
+          "evidence": "docs/workstreams/quick-read/log.md"
+        },
+        {
+          "id": "frontend",
+          "status": "PASS",
+          "method": "command",
+          "command": "pnpm exec tsc --noEmit; pnpm build",
+          "cwd": ".",
+          "at": "2026-10-30T09:29:13.334Z",
+          "environment": {
+            "runtime": "WSL Node24.13.0/pnpm12.16.1"
+          },
+          "exit_code": 0,
+          "output": "TSC exit0;290keys;Vite3m53s;1934modules; existing chunk-size warning",
+          "evidence": "docs/workstreams/quick-read/log.md"
+        },
+        {
+          "id": "nsis",
+          "status": "PASS",
+          "method": "command",
+          "command": "env PATHEXT='.COM;.EXE;.BAT;.CMD' cmd.exe /d /c 'I:\\_AI\\glagol\\.scratch\\bundle.cmd'",
+          "cwd": ".",
+          "at": "2026-10-30T09:29:13.334Z",
+          "environment": {
+            "runtime": "Windows Node22.23.1/Rust1.99.1/TauriCLI2.11.1"
+          },
+          "exit_code": 0,
+          "output": "Finished1bundle;release43.64s;10404735bytes;SHA256cf92cc655d3a2719365bcc42bdfa0b6eadbc7154b5cab8421e761a95c2e179d7;not installed/published",
+          "evidence": "docs/workstreams/quick-read/log.md"
+        },
+        {
+          "id": "context",
+          "status": "PASS",
+          "method": "command",
+          "command": "pnpm runbook:test; pnpm i18n:test; pnpm context:refresh; pnpm runbook:check; git diff --check",
+          "cwd": ".",
+          "at": "2026-10-30T09:29:42.735Z",
+          "environment": {
+            "runtime": "WSL Node24.13.0/pnpm12.16.1; tests outside sandbox"
+          },
+          "exit_code": 0,
+          "output": "49runbook,3i18n tests PASS; final context write/check exit0,14series; git diff --check exit0; earlier draft UTC format FAIL corrected without changing validator",
+          "evidence": "docs/workstreams/quick-read/log.md"
+        },
+        {
+          "id": "candidate",
+          "status": "PASS",
+          "method": "command",
+          "command": "env PATHEXT='.COM;.EXE;.BAT;.CMD' powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command '& \"I:\\_AI\\glagol\\.scratch\\update-mini-player-candidate.ps1\"' < /dev/null",
+          "cwd": ".",
+          "at": "2026-10-30T09:29:13.334Z",
+          "environment": {
+            "runtime": "Windows11 interactive desktop; exact owned QA path/PID guard"
+          },
+          "exit_code": 0,
+          "output": "Ready: hidden mini-player candidate PID9020; startup visibility applied observed; no installer run",
+          "evidence": "docs/workstreams/quick-read/log.md"
+        },
+        {
+          "id": "close-ui",
+          "status": "PASS",
+          "method": "manual",
+          "command": "Длинное чтение → ×; проверить продолжение речи, скрытие, Ctrl+Alt+P/S и появление при новом чтении",
+          "cwd": ".",
+          "at": "2026-10-30T09:29:13.334Z",
+          "environment": {
+            "runtime": "Windows11; updated CLI QA candidate PID9020"
+          },
+          "exit_code": null,
+          "output": "Пользователь: Да, всё работает. Manual PASS этого сценария; не hotkey latency или offline/multi-monitor.",
+          "evidence": "docs/workstreams/quick-read/log.md"
+        }
+      ]
     },
     {
       "id": "O",

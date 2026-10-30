@@ -158,3 +158,13 @@ buffer/invalid surrogate/blank selection. Native manual: выделить сме
 документ. Большой file prefix: максимум2MB byte offset/500k UTF-16; сообщение
 предлагает explicit copy/read clipboard или OCR. UTF-8/SBCS; DBCS отдельно не поддержан.
 Все calls150ms, original child hard3s; нет исключений для повышенного процесса.
+
+## Скрытие мини-плеера
+
+Крестик вызывает quick_read_hide_player; suppression хранится по generation, отдельно
+от постоянного show-player. Reporter не должен показывать то же поколение снова.
+Новый запрос возвращает обычную видимость; явное включение show-player снимает
+suppression. Никаких replace/stop/pause из hide. Регрессия проверяет продвижение
+PCM, сохранение pause/cancellation generation и видимость при повторных updates.
+Manual: длинный текст → × → речь продолжается, окно скрыто; Ctrl+Alt+P и S работают;
+новый R показывает окно по настройке без активации. Звук/GUI не выводятся из unit PASS.
