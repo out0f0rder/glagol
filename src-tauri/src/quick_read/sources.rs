@@ -4,6 +4,8 @@
 mod ocr;
 #[cfg(windows)]
 mod scintilla;
+#[cfg(any(windows, test))]
+mod selection;
 #[cfg(windows)]
 mod windows;
 #[cfg(windows)]

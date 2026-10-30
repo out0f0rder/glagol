@@ -179,3 +179,18 @@ TextPattern=true and a collapsed range. Whole-item SelectionPattern is distinct
 from TextPattern.GetSelection; do not substitute a whole message for a selected
 substring. Foreground text-selection and pointer/audio checks remain manual.
 Explicit copy + Ctrl+Alt+V or OCR are alternatives; no automatic Ctrl+C.
+
+## Gmail и PDF в Chrome
+
+Metadata: actual foreground HWND, focus/pointer roles and TextPattern selection
+range endpoints; never GetText/Name/Value/URL/email/PDF content. Gmail may focus a
+ListItem without TextPattern while its ancestor Document owns a nonempty range.
+PDF may leave UIA focus on the browser toolbar; the document/text under pointer
+can expose the range. Selection traverses only ancestors (16-node budget), then
+point ancestors if Win32 root matches the initial foreground HWND; recheck focus.
+No DocumentRange, whole paragraph, Name/Value or sibling scan in selection mode.
+Retain password ancestry, fatal-error/length checks, Scintilla and hard3s timeout.
+Manual: Gmail R selected-only; PDF selectable text R with pointer over selection;
+then clear selection (must not read a page), pointer outside active window,
+password and unrelated-window selection rejection. Scanned PDF may need OCR.
+Unit regression cases in sources/selection.rs run without an interactive desktop.

@@ -250,3 +250,35 @@ context:refresh exit0; runbook:check exit0 «runbook-check OK (14 series)»; dif
 ## 2026-10-30T10:36:43.507Z — T закрыт после foreground и manual E
 
 context:refresh/runbook:check exit0,14series; git diff --check exit0. Обязательные diagnosis/foreground-metadata/telegram-live(E)/context PASS. Это подтверждённый доступный путь для whole-message и объяснение ограничения R, не новый substring fallback. Claim очищен, NEXT O остаётся deferred. Сохраняется отдельный docs commit; новый EXE/NSIS не нужен.
+
+## 2026-10-30T10:47:23.015Z — U: Gmail/PDF Chrome
+
+Пользователь сообщил, что Gmail и PDF в Chrome тоже не читаются, спросил причину и варианты. Git clean local9b485f3, tracking origin/feat/quick-read; fetch/push не выполнялись. U занят перед диагностикой, T завершён, O deferred. Реальный текущий code path selection проверяет только GetFocusedElement; ancestor/pointer/document fallback для selection отсутствует. Это потенциальный дефект поиска, не доказательство недоступности Gmail/PDF. Сначала metadata focus/parents/point/Document patterns и nonempty ranges без GetText/Name/Value/URL/email/PDF-content. Запрошено оставить Chrome активным на неперсональном выделении.
+
+## 2026-10-30T10:56:18.301Z — U: Gmail и PDF metadata, исправление поиска
+
+Chrome156.0.8078.74 foreground=true; команды .scratch/chrome-foreground-selection-probe.ps1 и chrome-ancestry-selection-probe.ps1 через env PATHEXT=... powershell -Command, exit0. Gmail (по ответу пользователя): focused ListItem без TextPattern, ancestor Document на глубине7 имеет TextPattern и1nonempty selection. Window на глубине14, прежний protected16 достаточен. Под указателем Text тоже имеет nonempty range. PDF (пользователь подтвердил выделяемый текст): UIA focus — toolbar Button без TextPattern, ancestry кWindow7 тоже без selection. Под указателем Text с nonempty selection; Document ancestor на глубине2 и3 тоже nonempty; внешние Documents имеют0ranges. Никаких GetText/Name/Value/URL/document contents в диагностике, фокус и буфер не менялись.
+
+Причина — не общее отсутствие UIA у Gmail/PDF, а узкий focus-only путь Глагола. Добавлен bounded ancestor search16nodes доWindow, только GetSelection; collapsed ranges отбрасываются до GetText. Если focus/предки не дали selection, после прежнего Scintilla fallback проверяется GetSelection у элемента/предков под указателем, только когда Win32 root под курсором совпадает с foreground window. Foreground snapshot перепроверяется, смена даёт changed. Protected ancestry/password перед каждым кандидатом с TextPattern сохраняется, fatal errors/limit не обходятся, общий child timeout3s прежний. Нет DocumentRange/Name/Value/подмены selection целым элементом, clipboard/keys/remote memory. Pure tests покрывают ancestor case, boundary/empty, fatal errors и cycle budget.
+
+Первая полная Rust проверка после ancestor patch: fmt/clippy exit0,372passed/0failed/8ignored,81.52s. Старый unresponsive_process_times_out_and_is_terminated задержался >60s на PowerShell, но завершился PASS; попытка housekeeping нашла0 owned runners (к тому моменту завершился), ничего не остановлено. Не записываем это как FAIL. Для надёжности test-only PowerShell Start-Sleep заменён native cmd set /p с удерживаемым stdin, без child процессов; assert50ms timeout/error90/terminated сохранены. Production worker не менялся. Сейчас повторные Rust gates после pointer patch и fixture correction; новые результаты будут отдельными, без перезаписи первого лога.
+
+## 2026-10-30T11:01:29.592Z — U: итоговые Rust gates PASS
+
+Вторая полная проверка (pointer patch + worker native fixture, ещё старый source PowerShell fixture) также завершилась сама:372passed/0failed/8ignored,171.83s. Её source hung-provider тест задержался >60s; inspection обнаружила owned test PID45828/child PowerShell30464. К моменту exact-path stop процесс уже завершился; команда сообщила Test already exited, ничего не остановлено. Это не FAIL, не принудительно полученный PASS.
+
+После замены и source test helper на native cmd с открытым stdin итоговые fmt --check/clippy --all-targets -- -D warnings/test exit0:372passed/0failed/8ignored,5.29s; clippy1.93s. Все проверки таймаута/завершения сохранены, ignored не запускались. Команды .scratch/check.cmd, логи /tmp/glagol-u-{clippy,test}-native-fixtures.log. Production TTS не менялся. Fixture-only hunks сохраняются отдельным commit, UIA feature пока dirty поверх9b485f3.
+
+Frontend git diff fc44db3 -- src package.json pnpm-lock.yaml пустой: JS/i18n неизменны, используется уже собранный/проверенный M frontend (290keys). Повторная frontend сборка не запускалась. NSIS собирается через Tauri CLI после этого checkpoint; не cargo build.
+
+## 2026-10-30T11:04:51.451Z — U: NSIS и QA копия готовы
+
+Tauri CLI .scratch/bundle.cmd exit0: release40.63s,Finished1bundle; 10407574bytes,SHA256 a5376b87338c7ff32457ad9d6eb6a7b3b62b123f8047ed70a5a6eb714ab56495,built2026-10-30T11:02:28.316Z. Source dirty UIA patch поверх localadeff28, frontend git diff --exit-code fc44db3 -- src package.json pnpm-lock.yaml exit0/empty, assets повторно не собирались. metadata/hash записаны в quick-read-dist; не установлен/не подписан updater/не опубликован.
+
+.scratch/update-chrome-candidate.ps1 (env PATHEXT=...powershell -Command) exit0: previous owned QA PID9020/path проверен и остановлен, release EXE скопирован, --tray readiness наблюдалась, новый PID53572. Пользователь получил отдельную процедуру Ctrl+Alt+R в Gmail и PDF(pointer над выделением); manual результаты ожидаются, metadata не выдаём за слышимую речь. context:refresh/runbook:check exit0,14series,49runbook tests PASS/0fail6617ms; исходниковых изменений после NSIS нет.
+
+## 2026-10-30T11:06:52.682Z — U: ручная приёмка Gmail/PDF PASS
+
+Пользователь ответил на процедуру «Ctrl+Alt+R на выделении Gmail, затем PDF(pointer над выделенным текстом), именно фрагмент»: «Да, Gmail и PDF читаются». Manual PASS обоих случаев на QA PID53572. Это не утверждение обо всех сайтах/PDF, сканах, фокусе/latency или новых negative GUI cases. Нет записи пользовательского письма/документа в evidence.
+
+U required diagnosis/rust/nsis/context/manual Gmail/manual PDF PASS; frontend подтверждён пустым git diff --exit-code fc44db3 -- src package.json pnpm-lock.yaml, используется M assets. Report/README обе части/USER_GUIDE обе/CHANGELOG/runbook/архитектура обновлены. Claim очищен; NEXT O offline остаётся deferred. Текущий step заканчивается локальным feature commit и metadata binding; установка/публикация не выполняются. Код после CLI NSIS не менялся, только документация/контекст.

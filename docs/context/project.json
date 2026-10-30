@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "observed_at": "2026-10-30T09:30:28.472Z",
+  "observed_at": "2026-10-30T11:06:52.682Z",
   "active_workstream": "quick-read",
   "links": [
     "AGENTS.md",
@@ -121,16 +121,16 @@
       "id": "quick-read-local-build",
       "label": "Quick Read — локальный кандидат",
       "status": "observed",
-      "summary": "Исходники0.6.1 + Quick Read, фонетика, автозапуск/трей, Notepad++ fallback и hide мини-плеера; local fc44db3. NSIS 10404735байт,SHA256 cf92cc655d3a2719365bcc42bdfa0b6eadbc7154b5cab8421e761a95c2e179d7;368Rust tests,fmt/clippy,TSC/Vite290keys,49runbook/3i18n PASS. QA EXE PID9020 готова в трее; не установлен/опубликован. Offline/multi-monitor NOT_RUN.",
-      "observed_at": "2026-10-30T09:30:28.472Z",
+      "summary": "Исходники0.6.1 + Quick Read, фонетика, startup/tray, Notepad++, hide мини-плеера и U Gmail/PDF selection fix поверх localadeff28 до commit. NSIS10407574bytes,SHA256a5376b87338c7ff32457ad9d6eb6a7b3b62b123f8047ed70a5a6eb714ab56495;372Rust tests/fmt/clippy и49runbook PASS. Frontend прежний M,290keys,новый build не запускался. QA PID53572 готова в трее; не установлен/опубликован. Offline/multi-monitor NOT_RUN.",
+      "observed_at": "2026-10-30T11:06:52.682Z",
       "source": "docs/workstreams/quick-read/log.md"
     },
     {
       "id": "quick-read-manual",
       "label": "Quick Read — ручная приёмка основных команд",
       "status": "reported",
-      "summary": "Пользователь подтвердил выделение в Chrome/Notepad, буфер, наведение, OCR/Escape, замену/паузу/стоп без наложения, mini-player без смены фокуса, переназначение/конфликт, библиотеку/диктовку. Предыдущий CLI кандидат, Windows 11, 1920x1080 125%, один монитор. Для нового CLI кандидата 91a2d99 пользователь дополнительно подтвердил хорошее звучание смешанного примера тем же RU голосом и возврат spelling при выключении настройки. Offline отложен. VS Code 1.143.1 file editor: после ручного editor.accessibilitySupport=on чтение подтверждено; до этого UIA возвращал пустой диапазон. 2026-10-30: Notepad++8.7.5 читает только выделенное; оба Startup switches меняются/сохраняются; M крестик скрывает с продолжением речи, P/S и новый показ работают. Настоящий login/uninstall не проверены.",
-      "observed_at": "2026-10-30T09:29:13.334Z",
+      "summary": "Пользователь подтвердил выделение в Chrome/Notepad, буфер, наведение, OCR/Escape, замену/паузу/стоп без наложения, mini-player без смены фокуса, переназначение/конфликт, библиотеку/диктовку. Предыдущий CLI кандидат, Windows 11, 1920x1080 125%, один монитор. Для нового CLI кандидата 91a2d99 пользователь дополнительно подтвердил хорошее звучание смешанного примера тем же RU голосом и возврат spelling при выключении настройки. Offline отложен. VS Code 1.143.1 file editor: после ручного editor.accessibilitySupport=on чтение подтверждено; до этого UIA возвращал пустой диапазон. 2026-10-30: Notepad++8.7.5 читает только выделенное; оба Startup switches меняются/сохраняются; M крестик скрывает с продолжением речи, P/S и новый показ работают. Настоящий login/uninstall не проверены. 2026-10-30 U: после ancestor/active-window pointer selection fix пользователь подтвердил Ctrl+Alt+R выбранного фрагмента Gmail и PDF в Chrome156.0.8078.74 (в PDF pointer над выделением). Сканы/все сайты не проверены.",
+      "observed_at": "2026-10-30T11:06:52.682Z",
       "source": "docs/workstreams/quick-read/log.md"
     }
   ],
@@ -224,6 +224,11 @@
     {
       "id": "quick-read-hide-player",
       "sha": "fc44db39d4cf32633e95376cf0b5a814ea28c879",
+      "scope": "local"
+    },
+    {
+      "id": "windows-native-timeout-fixtures",
+      "sha": "adeff28",
       "scope": "local"
     }
   ]

@@ -699,6 +699,136 @@
       ]
     },
     {
+      "id": "U",
+      "title": "Выделение Gmail и PDF в Chrome",
+      "status": "done",
+      "depends_on": [
+        "T"
+      ],
+      "required": [
+        "diagnosis",
+        "rust",
+        "nsis",
+        "context",
+        "gmail-live",
+        "pdf-live"
+      ],
+      "checks": [
+        {
+          "id": "diagnosis",
+          "status": "PASS",
+          "method": "command",
+          "command": "env PATHEXT='.COM;.EXE;.BAT;.CMD' powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command '& \"I:\\_AI\\glagol\\.scratch\\chrome-foreground-selection-probe.ps1\"' < /dev/null > /tmp/glagol-chrome-gmail-metadata.log 2>&1; env PATHEXT='.COM;.EXE;.BAT;.CMD' powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command '& \"I:\\_AI\\glagol\\.scratch\\chrome-ancestry-selection-probe.ps1\"' < /dev/null > /tmp/glagol-chrome-pdf-metadata.log 2>&1",
+          "cwd": ".",
+          "at": "2026-10-30T11:02:43.109Z",
+          "environment": {
+            "runtime": "Windows11; Chrome156.0.8078.74; actual foreground HWND; metadata only"
+          },
+          "exit_code": 0,
+          "output": "Gmail focused ListItem no TextPattern, ancestor Document depth7 nonempty selection. PDF focused toolbar Button no pattern, pointer Text and Documents nonempty selection. No content/URL/Name/Value/GetText queried.",
+          "evidence": "docs/workstreams/quick-read/log.md"
+        },
+        {
+          "id": "rust",
+          "status": "PASS",
+          "method": "command",
+          "command": "env PATHEXT='.COM;.EXE;.BAT;.CMD' cmd.exe /d /c 'I:\\_AI\\glagol\\.scratch\\check.cmd fmt --manifest-path src-tauri/Cargo.toml --check'; env PATHEXT='.COM;.EXE;.BAT;.CMD' cmd.exe /d /c 'I:\\_AI\\glagol\\.scratch\\check.cmd clippy --manifest-path src-tauri/Cargo.toml --all-targets -- -D warnings'; env PATHEXT='.COM;.EXE;.BAT;.CMD' cmd.exe /d /c 'I:\\_AI\\glagol\\.scratch\\check.cmd test --manifest-path src-tauri/Cargo.toml'",
+          "cwd": ".",
+          "at": "2026-10-30T11:02:43.109Z",
+          "environment": {
+            "runtime": "Windows Rust1.99.1; native cmd timeout fixtures at adeff28"
+          },
+          "exit_code": 0,
+          "output": "fmt/clippy exit0;372passed,0failed,8ignored,5.29s; four ancestor regression tests; earlier full runs also passed slowly before fixture replacement.",
+          "evidence": "docs/workstreams/quick-read/log.md"
+        },
+        {
+          "id": "frontend-reuse",
+          "status": "PASS",
+          "method": "command",
+          "command": "git diff --exit-code fc44db3 -- src package.json pnpm-lock.yaml",
+          "cwd": ".",
+          "at": "2026-10-30T11:02:43.109Z",
+          "environment": {
+            "runtime": "WSL Git; verified frontend M build reused"
+          },
+          "exit_code": 0,
+          "output": "Empty diff. Frontend unchanged since validated M (290keys/TSC/Vite3m53s). No new frontend build claimed.",
+          "evidence": "docs/workstreams/quick-read/log.md"
+        },
+        {
+          "id": "nsis",
+          "status": "PASS",
+          "method": "command",
+          "command": "env PATHEXT='.COM;.EXE;.BAT;.CMD' cmd.exe /d /c 'I:\\_AI\\glagol\\.scratch\\bundle.cmd'",
+          "cwd": ".",
+          "at": "2026-10-30T11:04:51.451Z",
+          "environment": {
+            "runtime": "Windows Node22.23.1/Rust1.99.1/TauriCLI2.11.1"
+          },
+          "exit_code": 0,
+          "output": "Finished1bundle,release40.63s;10407574bytes;SHA256a5376b87338c7ff32457ad9d6eb6a7b3b62b123f8047ed70a5a6eb714ab56495;CLI embedded unchanged frontend;not installed/published",
+          "evidence": "docs/workstreams/quick-read/log.md"
+        },
+        {
+          "id": "context",
+          "status": "PASS",
+          "method": "command",
+          "command": "pnpm runbook:test; pnpm context:refresh; pnpm runbook:check; git diff --check",
+          "cwd": ".",
+          "at": "2026-10-30T11:04:51.451Z",
+          "environment": {
+            "runtime": "WSL Node24.13.0/pnpm12.16.1"
+          },
+          "exit_code": 0,
+          "output": "49runbook tests PASS/0failed,6617ms; context write/check exit0,14series; diff --check exit0; final evidence checkpoint follows manual response.",
+          "evidence": "docs/workstreams/quick-read/log.md"
+        },
+        {
+          "id": "gmail-live",
+          "status": "PASS",
+          "method": "manual",
+          "command": "Chrome — Gmail: выделить текст, Ctrl+Alt+R; для PDF указатель над выделением",
+          "cwd": ".",
+          "at": "2026-10-30T11:06:52.682Z",
+          "environment": {
+            "runtime": "Windows11; Chrome156.0.8078.74; updated QA candidate PID53572"
+          },
+          "exit_code": null,
+          "output": "Пользователь: Да, Gmail и PDF читаются. Ответ на процедуру чтения именно выделенного фрагмента в обоих случаях. Не latency, не scanned PDFs или все сайты.",
+          "evidence": "docs/workstreams/quick-read/log.md"
+        },
+        {
+          "id": "pdf-live",
+          "status": "PASS",
+          "method": "manual",
+          "command": "Chrome — PDF с выделяемым текстом: выделить текст, Ctrl+Alt+R; для PDF указатель над выделением",
+          "cwd": ".",
+          "at": "2026-10-30T11:06:52.682Z",
+          "environment": {
+            "runtime": "Windows11; Chrome156.0.8078.74; updated QA candidate PID53572"
+          },
+          "exit_code": null,
+          "output": "Пользователь: Да, Gmail и PDF читаются. Ответ на процедуру чтения именно выделенного фрагмента в обоих случаях. Не latency, не scanned PDFs или все сайты.",
+          "evidence": "docs/workstreams/quick-read/log.md"
+        },
+        {
+          "id": "candidate",
+          "status": "PASS",
+          "method": "command",
+          "command": "env PATHEXT='.COM;.EXE;.BAT;.CMD' powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command '& \"I:\\_AI\\glagol\\.scratch\\update-chrome-candidate.ps1\"' < /dev/null",
+          "cwd": ".",
+          "at": "2026-10-30T11:04:51.451Z",
+          "environment": {
+            "runtime": "Windows11; exact QA path/PID guard"
+          },
+          "exit_code": 0,
+          "output": "Ready: hidden Gmail/PDF candidate PID53572; startup visibility applied observed.",
+          "evidence": "docs/workstreams/quick-read/log.md"
+        }
+      ]
+    },
+    {
       "id": "O",
       "title": "Отложенная ручная проверка чтения и OCR без сети",
       "status": "pending",

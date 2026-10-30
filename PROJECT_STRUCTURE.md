@@ -35,6 +35,7 @@ CC BY-NC-SA 4.0 для некоммерческого использования
 | `preferences.rs`, `commands/preferences.rs` | Миграция старых неявных настроек, UI/STT/TTS языки, голоса, onboarding |
 | `i18n` | Native messages на IPC/event границе; пользовательские аргументы сохраняются |
 | `quick_read` | Генерации/отмена, предложения, bounded cpal PCM, настройки и non-activating player; Windows UIA/clipboard/OCR в killable child |
+| `quick_read/sources/selection.rs` | Чистая ограниченная логика обхода предков за выделением; регрессии focus/document/boundary/cycle без GUI |
 | `quick_read/sources/scintilla.rs` | Ограниченное read-only выделение Scintilla через scalar сообщения и WM_GETTEXT; без clipboard/remote memory |
 | `commands/synthesize.rs` | Общий последовательный pipeline, временный WAV, транзакция |
 | `tts/mod.rs` | TtsBackend: provider, voices, limits, WAV result, cancellation |

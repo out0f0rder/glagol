@@ -19,6 +19,8 @@ the per-session master logs under [`docs/day-logs/`](docs/day-logs/).
 
 ### Fixed
 
+- Quick Read finds selected ranges in parent text containers and, when focus has no selection, under the pointer in the same active window. This covers Gmail message rows and Chrome PDF toolbar focus without reading entire pages. / Быстрое чтение ищет выделение у родительских текстовых элементов, затем под указателем в том же активном окне, если в фокусе выделения нет. Учтён фокус на строке Gmail и панели PDF Chrome без чтения всей страницы.
+
 - The Quick Read mini-player’s × button hides only the current reading’s window, preserving speech, pause position and its saved visibility preference. The stop button and shortcut remain separate. / Крестик мини-плеера скрывает только окно текущего чтения, сохраняя речь, позицию паузы и настройку показа. Кнопка и сочетание остановки остаются отдельными.
 
 - Read ordinary Notepad++ selections through a bounded, read-only Scintilla fallback when UI Automation exposes no TextPattern. Unicode offsets are preserved; unsupported ranges or selection modes offer clipboard/OCR. / Обычное выделение Notepad++ читается через ограниченный read-only адаптер Scintilla, если UI Automation не даёт TextPattern. Unicode-позиции сохраняются; для неподдерживаемой области или режима предлагаются буфер/OCR.

@@ -167,6 +167,14 @@ be inaccessible. Pointer lookup uses physical screen coordinates on scaled displ
 UIA extraction has a three-second timeout; Glagol cannot
 provide text that an application does not expose.
 
+Selection checks a chain of up to 16 elements, starting with the focused control
+and stopping at the window. If they expose no selection, Glagol also checks the element under
+the pointer and its ancestors within the same active window. Only selected
+ranges are read, never the whole page. This handles Gmail's focused message row
+and a PDF toolbar retaining focus while text is selected in the document. Keep
+the pointer over the selected text in such PDFs. An image-only PDF without an
+accessible text layer requires OCR; explicit copy + `Ctrl+Alt+V` is another path.
+
 **Notepad++:** an ordinary single selection uses a read-only Scintilla fallback
 when UI Automation does not expose text. UTF-8 and single-byte modes are supported;
 focus, selection and clipboard stay unchanged. For rectangular/multiple selections,

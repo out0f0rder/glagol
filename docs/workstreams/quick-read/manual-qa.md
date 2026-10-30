@@ -71,3 +71,11 @@ Telegram Desktop7.3.3, 2026-10-30: пользователь уточнил пр�
 Отдельный manual Ctrl+Alt+E под указателем: «Да, сообщение читается» — PASS
 чтения целого сообщения. Character selection через R не исправлялось; compose
 box и Telegram Web этим не проверены. Диагностика не считывала содержимое сообщений.
+
+Gmail/PDF Chrome156.0.8078.74, 2026-10-30: metadata выявила доступный range у
+ancestor Document(Gmail), pointer Text/Document(PDF) при focus без TextPattern.
+Исправленная QA копия PID53572: пользователь подтвердил Ctrl+Alt+R именно
+выделенного фрагмента в обоих случаях: «Да, Gmail и PDF читаются» — manual PASS.
+Для PDF указатель оставляли над выделением. Сканы, другие PDF viewer/sites, новые
+negative GUI сценарии empty-selection/другого окна этим не проверены; pure tests
+покрывают empty/boundary/fatal/cycle, source timeout/protection сохранены.

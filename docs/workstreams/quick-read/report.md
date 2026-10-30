@@ -1,7 +1,8 @@
 # Quick Read — локальный результат 2026-10-30
 
 Ветка `feat/quick-read`; фонетика local `91a2d99`, запуск local `aaa6b34`,
-Notepad++ local `0135dfd`; скрытие мини-плеера — local `fc44db3`.
+Notepad++ local `0135dfd`; скрытие мини-плеера — local `fc44db3`;
+новое исправление Gmail/PDF U поверх local `adeff28` (commit ниже после сохранения).
 Это исходники 0.6.1 + Quick Read, не опубликованный релиз v0.6.1.
 Установка и публикация не выполнялись.
 
@@ -34,15 +35,17 @@ Notepad++ local `0135dfd`; скрытие мини-плеера — local `fc44d
 Windows 11 build 26200.9711, Rust/MSVC 1.99.1; frontend WSL Node24.13.0/pnpm12.16.1.
 Фактические команды/даты/коды и границы — [журнал](log.md).
 
-- Rust fmt/clippy `--all-targets -- -D warnings`: PASS; cargo test: 368 passed,
+- Rust fmt/clippy `--all-targets -- -D warnings`: PASS; cargo test: 372 passed,
   8 ignored (ignored не выдаются за выполненные).
-- TypeScript, 290 i18n keys и Vite production build (3m53s): PASS. Осталось обычное
+- Frontend прежний M: TypeScript, 290 i18n keys и Vite production build (3m53s)
+  ранее PASS; git diff fc44db3 по src/package/lock пустой, в U не пересобирался. Осталось обычное
   предупреждение размера JS bundle >500kB; гейты не ослаблены.
 - Ранее, 2026-10-29 (в M не повторялись): Python adapter 11 tests PASS.
   Native RU mixed PCM, фонетика on/off,
   PCM↔WAV/cancel/recovery: PASS. Native EN four voices/library WAV/recovery: PASS.
-- Гейты: 49 runbook tests, 3 i18n tests и runbook-check 14 series: PASS.
-- NSIS через Tauri CLI: PASS (release43.64s). Обновлённая direct-run EXE
+- Актуальные гейты: 49 runbook tests и runbook-check 14 series: PASS.
+  3 i18n tests ранее PASS на M; в U словари и frontend не менялись.
+- NSIS через Tauri CLI: PASS (U release40.63s). Обновлённая direct-run EXE
   скрыто запущена, readiness наблюдалась; это не замер hotkey→звук.
 - Пользователь вручную подтвердил на предыдущем CLI кандидате выделение
   Chrome/Notepad, clipboard/pointer/OCR/Escape, pause/stop/replace без наложения,
@@ -88,15 +91,33 @@ Desktop/message проверка активного Telegram подтверди�
 и буфер не менялись. Не добавлялся несуществующий native read-selection protocol.
 Ctrl+C явно + Ctrl+Alt+V или OCR — пути для фрагмента. Пользователь отдельно
 подтвердил чтение целого сообщения под указателем через Ctrl+Alt+E: manual PASS.
-Код/EXE остаются fc44db3;
-диагностика и инструкции не требуют новой сборки. Primary v7.3.3 source показывает
+Telegram проверялся на коде fc44db3; сама эта диагностика не меняла приложение. Primary v7.3.3 source показывает
 message rows как ListItem, что согласуется с наблюдением; это не TextPattern range.
+
+## Gmail/PDF Chrome — исправление U
+
+Chrome156.0.8078.74, active metadata: Gmail оставляет фокус на ListItem без
+TextPattern, а Document на глубине7 предоставляет nonempty range. PDF оставлял
+UIA focus на toolbar Button; под указателем Text и Document предоставляют range.
+Это дефект прежнего focus-only поиска Глагола, не отсутствие доступного текста.
+
+Добавлена цепочка16nodes от focus доWindow; если selection не найден — аналогичная
+цепочка под указателем, только в том же исходном foreground Win32 root. Смена
+foreground отменяет результат. Только GetSelection, collapsed range пропускается;
+нет DocumentRange/Name/Value/paragraph/sibling fallback. Password/protection и
+hard3s cap сохранены, Scintilla прежний. Четыре pure regression tests проходят.
+Тестовые PowerShell timeout helpers заменены native cmd, asserts сохранены;
+отдельный local commit adeff28. Сама озвучка/декодирование/плеер не менялись.
+QA копия PID53572 скрыто готова. Пользователь подтвердил Ctrl+Alt+R для именно
+выделенного фрагмента и в Gmail, и в PDF — manual PASS этих двух случаев.
+Для PDF со сканом без доступного текстового слоя остаётся OCR.
 
 ## Артефакт и ограничения
 
-Установщик M: `.scratch/quick-read-dist/Glagol_0.6.1_x64-setup.exe`,
-10 404 735 байт; SHA-256 `cf92cc655d3a2719365bcc42bdfa0b6eadbc7154b5cab8421e761a95c2e179d7`.
-Собран 2026-10-30T09:27:04.029932+00:00; frontend/NSIS и ручная проверка крестика PASS.
+Установщик U (Gmail/PDF): `.scratch/quick-read-dist/Glagol_0.6.1_x64-setup.exe`,
+10 407 574 байт; SHA-256 `a5376b87338c7ff32457ad9d6eb6a7b3b62b123f8047ed70a5a6eb714ab56495`.
+Собран 2026-10-30T11:02:28.316Z; Rust/NSIS PASS, frontend прежний проверенный M;
+ручная проверка Gmail/PDF PASS. Крестик ранее подтверждён на M.
 Рядом `SHA256SUMS` и `build.json` с привязкой к исходникам. Сборка не подписана
 для updater, не установлена и не опубликована. Тестовая EXE обновлена и запущена.
 
