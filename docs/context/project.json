@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "observed_at": "2026-10-30T11:06:52.682Z",
+  "observed_at": "2026-10-30T11:08:28.026Z",
   "active_workstream": "quick-read",
   "links": [
     "AGENTS.md",
@@ -121,8 +121,8 @@
       "id": "quick-read-local-build",
       "label": "Quick Read — локальный кандидат",
       "status": "observed",
-      "summary": "Исходники0.6.1 + Quick Read, фонетика, startup/tray, Notepad++, hide мини-плеера и U Gmail/PDF selection fix поверх localadeff28 до commit. NSIS10407574bytes,SHA256a5376b87338c7ff32457ad9d6eb6a7b3b62b123f8047ed70a5a6eb714ab56495;372Rust tests/fmt/clippy и49runbook PASS. Frontend прежний M,290keys,новый build не запускался. QA PID53572 готова в трее; не установлен/опубликован. Offline/multi-monitor NOT_RUN.",
-      "observed_at": "2026-10-30T11:06:52.682Z",
+      "summary": "Исходники0.6.1 + Quick Read, фонетика, startup/tray, Notepad++, hide мини-плеера и U Gmail/PDF selection fix local1ffdda4. NSIS10407574bytes,SHA256a5376b87338c7ff32457ad9d6eb6a7b3b62b123f8047ed70a5a6eb714ab56495;372Rust tests/fmt/clippy и49runbook PASS. Frontend прежний M,290keys,новый build не запускался. QA PID53572 готова в трее; не установлен/опубликован. Offline/multi-monitor NOT_RUN.",
+      "observed_at": "2026-10-30T11:08:28.026Z",
       "source": "docs/workstreams/quick-read/log.md"
     },
     {
@@ -229,6 +229,11 @@
     {
       "id": "windows-native-timeout-fixtures",
       "sha": "adeff28",
+      "scope": "local"
+    },
+    {
+      "id": "quick-read-browser-selection",
+      "sha": "1ffdda4936a4fe09c45d2bb2a3307b6f7a923b75",
       "scope": "local"
     }
   ]

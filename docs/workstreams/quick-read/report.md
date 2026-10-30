@@ -2,7 +2,7 @@
 
 Ветка `feat/quick-read`; фонетика local `91a2d99`, запуск local `aaa6b34`,
 Notepad++ local `0135dfd`; скрытие мини-плеера — local `fc44db3`;
-новое исправление Gmail/PDF U поверх local `adeff28` (commit ниже после сохранения).
+исправление Gmail/PDF U — local `1ffdda4`, test fixtures — local `adeff28`.
 Это исходники 0.6.1 + Quick Read, не опубликованный релиз v0.6.1.
 Установка и публикация не выполнялись.
 
