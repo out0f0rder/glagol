@@ -17,6 +17,7 @@ CC BY-NC-SA 4.0 для некоммерческого использования
 | `pages/Dictation.tsx` | Горячая клавиша, микрофон, история |
 | `components/settings/DictationSection.tsx` | Local/server/cloud STT, модели и ключи |
 | `components/settings/TtsSection.tsx` | Лицензия, скачивание/импорт, восстановление, удаление, голоса |
+| `components/settings/StartupSection.tsx` | Автозапуск Windows и следующий запуск в трей; без автоматического включения |
 | `components/settings/UpdatesSection.tsx`, `lib/updates.ts` | Версия, ручная проверка, автопроверка при запуске, установка подписанного обновления |
 | `components/settings/QuickReadSection.tsx`, `components/quick-read` | Шесть сочетаний, язык OCR, мини-плеер и рамка области; отдельные webview без главного окна |
 | `contexts/TtsContext.tsx` | Только локальное состояние TTS; без сети/OAuth при старте |
@@ -42,6 +43,7 @@ CC BY-NC-SA 4.0 для некоммерческого использования
 | `tts/silero/runtime.rs`, `runtime-files.json` | Безопасная распаковка и проверка файлов |
 | `tts/silero/worker.rs`, `worker.py` | Скрытый CPU-процесс, bounded stdio JSON, офлайн синтез |
 | `commands/tts.rs` | Status/install/cancel/remove/preview; backend consent checks |
+| `startup` | LaunchMode, default-off start-in-tray, HKCU Run opt-in для текущей EXE, typed настройки запуска |
 | `commands/updates.rs` | Версия, флаг автопроверки, проверка `latest.json`, скачивание с прогрессом и установка через tauri-plugin-updater |
 | `stt/local` | Необязательные GigaAM/transcribe.cpp; downloader переиспользуется TTS |
 | `stt/moonshine` | EN каталог, staging, проверенные DLL, C ABI, скрытый режим того же EXE |

@@ -164,3 +164,10 @@ Updated 2026-09-24. Historical sprint roadmaps and PR protocols are not current 
 - Rust global-shortcut plugin dispatches by exact shortcut identity; dictation retains Pressed/Released. Settings detect both internal and OS conflicts. UIA/OCR/capture modules and Windows bindings are cfg-isolated. Interactive acceptance remains separate from build/tests: `docs/workstreams/quick-read/manual-qa.md`.
 
 - Russian Quick Read PCM has default-on approximate English pronunciation (stdlib rules + small exceptions in existing `worker.py`), snapshot per reading and persisted toggle. Known/technical initialisms retain letter names; no voice/model switch, network or new dependency. WAV documents/previews keep legacy normalization; English model is independent. Pronunciation quality requires manual listening.
+
+## Startup / tray
+
+- Main config has create=false/visible=false/focus=false. After backend setup, a Windows startup thread creates main first and then the existing surfaces while the UI loop runs; it shows main only after reading the default-off `start_in_tray` preference. `--tray`/`--hidden` force hidden, `--show` overrides it. A normal second launch shows the existing main; hidden repeats leave visibility/focus untouched. Native source/STT child modes still enter before Tauri.
+- `startup` owns an explicit opt-in HKCU Run value `Glagol` with quoted current EXE + `--tray`, bounded UTF-16/REG_SZ; never rewrite it at process start or override StartupApproved. Its value name matches NSIS productName cleanup (normal uninstall removes, update mode preserves). No admin/new dependency; settings report another location/errors without hiding visibility preferences.
+
+- Startup registration snapshots settings and releases DB/shortcut guards before UI-thread global-shortcut calls. Keep this ordering to avoid blocking initial webview IPC. A normal repeat received before main exists is retained by PendingShow.

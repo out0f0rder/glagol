@@ -185,4 +185,4 @@ tokio = { version = "1", features = ["full", "test-util"] }
 
 [target.'cfg(windows)'.dependencies]
 # Unifies with Tauri/cpal's existing windows 0.61.3. Integration stays native/offline.
-windows = { version = "=0.61.3", features = ["Win32_UI_Accessibility", "Win32_System_Com", "Win32_System_Threading", "Win32_System_DataExchange", "Win32_System_Memory", "Win32_UI_WindowsAndMessaging", "Win32_Graphics_Gdi", "Win32_UI_HiDpi", "Win32_System_WinRT", "Media_Ocr", "Graphics_Imaging", "Globalization", "Storage_Streams"] }
+windows = { version = "=0.61.3", features = ["Win32_UI_Accessibility", "Win32_System_Com", "Win32_System_Threading", "Win32_System_DataExchange", "Win32_System_Memory", "Win32_System_Registry", "Win32_Security", "Win32_UI_WindowsAndMessaging", "Win32_Graphics_Gdi", "Win32_UI_HiDpi", "Win32_System_WinRT", "Media_Ocr", "Graphics_Imaging", "Globalization", "Storage_Streams"] }

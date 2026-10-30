@@ -48,6 +48,27 @@ local dictation. Upgrades retain modes, server addresses, credentials and voices
   Library, rename, localized player, 0.5–2× playback, WAV export and backups.
   Existing recordings and their metadata remain usable.
 
+### Login startup and starting in the tray
+
+In the local development build (not the published v0.6.1), Settings → Startup
+provides two switches, both off by default:
+
+- **Launch when signing in to Windows** starts this copy of Glagol in the tray
+  when you sign in, without the main window. No administrator rights are needed.
+- **Start in the tray** hides the main window on the next ordinary launch.
+  It does not change the current window; Windows login startup is always hidden.
+
+Open the window through Show Glagol in the tray menu or an ordinary repeat launch.
+A shortcut can append `--tray` (also `--hidden`) to the EXE path for hidden startup,
+or `--show` to open the window regardless of the preference. Repeating `--tray`
+never hides or activates an existing window. Global shortcuts keep working in the tray.
+
+Login registration uses this copy's path: enable it again after moving the app.
+Settings indicate an entry pointing to another copy. Windows can delay startup
+or disable it in Task Manager → Startup apps; Glagol does not override that choice.
+Normal NSIS uninstallation removes the entry; update mode preserves it. Closing
+the window keeps Glagol in the tray; Quit exits the application.
+
 ### Quick Read (local development build)
 
 Quick Read is new in the source tree and is **not included in the linked v0.6.1 release**.
@@ -198,6 +219,27 @@ the development machine; importing pinned files was exercised separately.
 - Текст или TXT/MD/DOCX/PDF; последовательная озвучка длинных документов в WAV.
   Библиотека, переименование, локализованный плеер, скорость 0.5–2×, экспорт и бэкапы.
   Старые записи и метаданные остаются доступны.
+
+### Автозапуск и запуск в трей
+
+В локальной сборке разработки (не в опубликованном v0.6.1) в «Настройки» →
+«Запуск приложения» доступны два выключенных по умолчанию переключателя:
+
+- **Запускать при входе в Windows** — запускать текущую копию Глагола в трее
+  при входе в учётную запись, без главного окна. Права администратора не нужны.
+- **Запускать в трее** — скрывать главное окно при следующем обычном запуске.
+  Текущее окно не меняется; автозапуск Windows всегда скрытый независимо от этой настройки.
+
+Открыть окно можно через меню трея «Показать Glagol» или обычным повторным запуском.
+В ярлыке можно добавить к пути EXE `--tray` (также `--hidden`) для скрытого запуска
+или `--show`, чтобы открыть окно независимо от настройки. Повторный `--tray` не
+скрывает и не активирует уже запущенное окно. Горячие клавиши работают из трея.
+
+Автозапуск запоминает путь этой копии: после перемещения включите его заново.
+Если запись ведёт к другой копии, настройки это показывают. Windows может задержать
+запуск или отключить его в «Диспетчер задач → Автозагрузка приложений»; Глагол не
+обходит это отключение. Штатное удаление NSIS убирает запись автозапуска, режим
+обновления её сохраняет. Закрытие окна оставляет приложение в трее; «Выход» завершает его.
 
 ### Быстрое чтение (локальная сборка разработки)
 

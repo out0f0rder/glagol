@@ -100,6 +100,27 @@ The Library supports play/pause, seek, 0.5–2× playback speed, volume, rename,
 export and delete. User titles, document contents and
 historical records are not translated when changing the interface.
 
+## Login startup and starting in the tray
+
+In the local development build (not the published v0.6.1), Settings → Startup
+provides two switches, both off by default:
+
+- **Launch when signing in to Windows** starts this copy of Glagol in the tray
+  when you sign in, without the main window. No administrator rights are needed.
+- **Start in the tray** hides the main window on the next ordinary launch.
+  It does not change the current window; Windows login startup is always hidden.
+
+Open the window through Show Glagol in the tray menu or an ordinary repeat launch.
+A shortcut can append `--tray` (also `--hidden`) to the EXE path for hidden startup,
+or `--show` to open the window regardless of the preference. Repeating `--tray`
+never hides or activates an existing window. Global shortcuts keep working in the tray.
+
+Login registration uses this copy's path: enable it again after moving the app.
+Settings indicate an entry pointing to another copy. Windows can delay startup
+or disable it in Task Manager → Startup apps; Glagol does not override that choice.
+Normal NSIS uninstallation removes the entry; update mode preserves it. Closing
+the window keeps Glagol in the tray; Quit exits the application.
+
 ## Quick Read (local development build)
 
 Quick Read is new in the source tree and is **not included in the linked v0.6.1 release**.

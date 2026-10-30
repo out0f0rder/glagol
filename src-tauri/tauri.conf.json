@@ -13,6 +13,9 @@
     "windows": [
       {
         "title": "Glagol",
+        "create": false,
+        "visible": false,
+        "focus": false,
         "width": 800,
         "height": 600
       }

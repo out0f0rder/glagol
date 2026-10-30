@@ -118,3 +118,24 @@ Collapsed range не заменять DocumentRange или ValuePattern: ина�
 весь документ без выделения. Этот обходной путь проверен пользователем для file
 editor VS Code 1.143.1 на Windows 11; terminal, chat/webview и multi-cursor отдельно
 не проверены. Если настройка неприемлема, явное Copy + Read clipboard либо OCR.
+
+## Автозапуск и скрытый запуск
+
+`startup` unit tests проверяют CLI policy (default/saved/explicit/repeat), quoting
+Unicode/пробелов, UTF-16 лимит Windows Run, default-off preference в SQLite и
+изоляцию других настроек. Windows test использует уникальный HKCU Software/Glagol/Tests
+ключ, не настоящий Run; проверяет roundtrip, malformed/oversized value, idempotent
+removal и сохранность соседнего значения. Он не включает login startup у пользователя.
+
+GUI: закрыть только принадлежащий тесту кандидат; запустить CLI-built EXE с `--tray`,
+проверить hidden main и неизменный foreground. Повторный `--tray` не показывает
+окно, обычный повтор показывает, `--tray` при видимом окне его не прячет. Отдельно
+проверить сохранённую настройку «Запускать в трее» после выхода и `--show` override.
+В настройках login toggle создаёт/удаляет только продуктовый HKCU Run, не меняет
+StartupApproved. Не включать автозапуск без явного действия пользователя в UI.
+Проверка настоящего входа в Windows, задержки ОС, Task Manager disable и
+uninstall/update — отдельная ручная приёмка, не результат unit tests.
+
+В generated `target/release/nsis/x64/installer.nsi` убедиться, что value name
+`Glagol` совпадает с PRODUCTNAME; штатное удаление Run value ограничено
+`$UpdateMode <> 1`. Локальная компиляция NSIS не доказывает реальный uninstall.

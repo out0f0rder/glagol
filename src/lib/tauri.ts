@@ -563,6 +563,13 @@ export interface QuickReadState {
 export interface QuickReadSettings {
   shortcuts: Record<string, string>; show_player: boolean; phonetic_english: boolean; ocr_language: "ru-RU" | "en-US"; registration_errors: string[];
 }
+export interface StartupSettings {
+  start_in_tray: boolean; autostart_enabled: boolean; autostart_supported: boolean;
+  autostart_other_copy: boolean; autostart_error: string | null;
+}
+export const getStartupSettings = () => invoke<StartupSettings>("get_startup_settings");
+export const setLaunchAtLogin = (enabled: boolean) => invoke<void>("set_launch_at_login", { enabled });
+export const setStartInTray = (enabled: boolean) => invoke<void>("set_start_in_tray", { enabled });
 export interface QuickReadRegion { generation: number; x: number; y: number; width: number; height: number; scale: number }
 export const quickReadAction = (action: QuickReadAction) => invoke<void>("quick_read_action", { action });
 export const getQuickReadState = () => invoke<QuickReadState>("quick_read_state");

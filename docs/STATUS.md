@@ -7,13 +7,15 @@
 
 Выбранная серия: **Быстрое чтение Windows**.
 
-**NEXT: O — Отложенная ручная проверка чтения и OCR без сети** (pending).
+**NEXT: N — Выделение текста в Notepad++** (in_progress).
 
 [Решения](workstreams/quick-read/README.md) · [Состояние](workstreams/quick-read/state.json) · [Журнал](workstreams/quick-read/log.md)
 
-Последний завершённый шаг серии: **V — Диагностика и совместимость выделения VS Code**.
+Выполняет: codex; ветка feat/quick-read; с 2026-10-30T08:53:08.661Z.
 
-Проверка 2026-10-29T13:24:39.696Z: Пользователь: чтение заработало. Metadata monitor без GetText наблюдал TextPattern и переход collapsed→nonempty selection. Terminal/chat/multi-cursor этим не проверены. Исходники Glagol не менялись. ([evidence](../docs/workstreams/quick-read/log.md)).
+Последний завершённый шаг серии: **L — Автозапуск Windows и запуск в трей**.
+
+Проверка 2026-10-30T08:53:08.661Z: fmt/clippy exit0; parallel cargo test363passed,0failed,8ignored in14.34s; exact tests not skipped ([evidence](../docs/workstreams/quick-read/log.md)).
 
 ## Доставка и наблюдения
 

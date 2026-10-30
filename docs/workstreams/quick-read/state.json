@@ -3,9 +3,13 @@
   "id": "quick-read",
   "title": "Быстрое чтение Windows",
   "status": "active",
-  "next": "O",
+  "next": "N",
   "reason": null,
-  "claim": null,
+  "claim": {
+    "owner": "codex",
+    "at": "2026-10-30T08:53:08.661Z",
+    "branch": "feat/quick-read"
+  },
   "links": [
     "docs/workstreams/quick-read/README.md",
     "docs/workstreams/quick-read/log.md",
@@ -337,6 +341,105 @@
           "evidence": "docs/workstreams/quick-read/log.md"
         }
       ]
+    },
+    {
+      "id": "L",
+      "title": "Автозапуск Windows и запуск в трей",
+      "status": "done",
+      "depends_on": [
+        "V"
+      ],
+      "required": [
+        "rust",
+        "frontend",
+        "nsis",
+        "context",
+        "gui"
+      ],
+      "checks": [
+        {
+          "id": "rust",
+          "status": "PASS",
+          "method": "command",
+          "command": "env PATHEXT='.COM;.EXE;.BAT;.CMD' cmd.exe /d /c 'I:\\_AI\\glagol\\.scratch\\check.cmd fmt --manifest-path src-tauri/Cargo.toml --check'; env PATHEXT='.COM;.EXE;.BAT;.CMD' cmd.exe /d /c 'I:\\_AI\\glagol\\.scratch\\check.cmd clippy --manifest-path src-tauri/Cargo.toml --all-targets -- -D warnings'; env PATHEXT='.COM;.EXE;.BAT;.CMD' cmd.exe /d /c 'I:\\_AI\\glagol\\.scratch\\check.cmd test --manifest-path src-tauri/Cargo.toml'",
+          "cwd": ".",
+          "at": "2026-10-30T08:53:08.661Z",
+          "environment": {
+            "runtime": "Windows 11 build26200.9711; Rust1.99.1; only child PATHEXT override"
+          },
+          "exit_code": 0,
+          "output": "fmt/clippy exit0; parallel cargo test363passed,0failed,8ignored in14.34s; exact tests not skipped",
+          "evidence": "docs/workstreams/quick-read/log.md"
+        },
+        {
+          "id": "frontend",
+          "status": "PASS",
+          "method": "command",
+          "command": "pnpm exec tsc --noEmit; pnpm build",
+          "cwd": ".",
+          "at": "2026-10-30T08:53:08.661Z",
+          "environment": {
+            "runtime": "WSL Node24.13.0/pnpm12.16.1"
+          },
+          "exit_code": 0,
+          "output": "TypeScript exit0; I18N289keys; Vite3m38s; existing JS chunk-size warning",
+          "evidence": "docs/workstreams/quick-read/log.md"
+        },
+        {
+          "id": "nsis",
+          "status": "PASS",
+          "method": "command",
+          "command": "env PATHEXT='.COM;.EXE;.BAT;.CMD' cmd.exe /d /c 'I:\\_AI\\glagol\\.scratch\\bundle.cmd'",
+          "cwd": ".",
+          "at": "2026-10-30T08:53:08.661Z",
+          "environment": {
+            "runtime": "Windows; Node22.23.1; Rust1.99.1; TauriCLI2.11.1"
+          },
+          "exit_code": 0,
+          "output": "Finished1bundle; 10394706bytes; SHA2560a1c8a3efa074c98e847328d5aa045d3fac3fe45dfa3698783219e38dcf3593a; cfg(test)-only fixture updated afterward",
+          "evidence": "docs/workstreams/quick-read/log.md"
+        },
+        {
+          "id": "context",
+          "status": "PASS",
+          "method": "command",
+          "command": "pnpm runbook:test; pnpm i18n:test; pnpm context:refresh; pnpm runbook:check",
+          "cwd": ".",
+          "at": "2026-10-30T08:53:08.661Z",
+          "environment": {
+            "runtime": "WSL Node24.13.0/pnpm12.16.1; child-process tests outside sandbox"
+          },
+          "exit_code": 0,
+          "output": "49runbook tests,3i18n tests PASS; context write OK; runbook-check14series OK",
+          "evidence": "docs/workstreams/quick-read/log.md"
+        },
+        {
+          "id": "gui",
+          "status": "PASS",
+          "method": "command",
+          "command": "env PATHEXT='.COM;.EXE;.BAT;.CMD' powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command '& \"I:\\_AI\\glagol\\.scratch\\startup-window-smoke.ps1\"' < /dev/null",
+          "cwd": ".",
+          "at": "2026-10-30T08:53:08.661Z",
+          "environment": {
+            "runtime": "Windows11 interactive desktop; Win32 window visibility checks; no speech listening or actual login"
+          },
+          "exit_code": 0,
+          "output": "PASS: first --tray hidden/no activation, hidden repeat hidden, normal repeat shows main, hidden repeat visible remains visible, first --show opens; candidate left PID46392",
+          "evidence": "docs/workstreams/quick-read/log.md"
+        }
+      ]
+    },
+    {
+      "id": "N",
+      "title": "Выделение текста в Notepad++",
+      "status": "in_progress",
+      "depends_on": [
+        "L"
+      ],
+      "required": [
+        "verification"
+      ],
+      "checks": []
     },
     {
       "id": "O",

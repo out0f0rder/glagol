@@ -1,7 +1,7 @@
 # Quick Read — локальный результат 2026-10-29
 
 Ветка `feat/quick-read`, код фонетики — local commit `91a2d99`. Это исходники
-0.6.1 + Quick Read, не опубликованный релиз v0.6.1. Установка и публикация не выполнялись.
+0.6.1 + Quick Read и запуск в трей, не опубликованный релиз v0.6.1. Установка и публикация не выполнялись.
 
 ## Реализация
 
@@ -29,9 +29,9 @@
 Windows 11 build 26200.9711, Rust/MSVC 1.99.1; frontend WSL Node24.13.0/pnpm12.16.1.
 Фактические команды/даты/коды и границы — [журнал](log.md).
 
-- Rust fmt/clippy `--all-targets -- -D warnings`: PASS; cargo test: 359 passed,
+- Rust fmt/clippy `--all-targets -- -D warnings`: PASS; cargo test: 363 passed,
   8 ignored (ignored не выдаются за выполненные).
-- TypeScript, 280 i18n keys и Vite production build: PASS. Осталось обычное
+- TypeScript, 289 i18n keys и Vite production build: PASS. Осталось обычное
   предупреждение размера JS bundle >500kB; гейты не ослаблены.
 - Python adapter: 11 tests PASS. Native RU mixed PCM, фонетика on/off,
   PCM↔WAV/cancel/recovery: PASS. Native EN four voices/library WAV/recovery: PASS.
@@ -46,10 +46,20 @@ Windows 11 build 26200.9711, Rust/MSVC 1.99.1; frontend WSL Node24.13.0/pnpm12.1
   публичного примера тем же RU голосом и возврат чтения по буквам при выключении
   настройки: manual PASS для этого примера и переключения.
 
+## Запуск в трей и автозапуск
+
+Добавлены два default-off переключателя: вход в Windows (всегда в трей) и обычный
+запуск в трее. `--tray`/`--hidden` скрывают первый запуск, `--show` открывает окно.
+Normal repeat открывает работающую копию, hidden repeat не меняет её видимость.
+Автозапуск использует HKCU Run текущей EXE, без администратора; существующий NSIS
+сохраняет его в update mode и удаляет при обычном uninstall. Нативный GUI smoke
+проверил hidden/no activation, оба repeat-сценария и --show. Настоящий login и
+переключение в UI после перезапуска остаются manual NOT_RUN.
+
 ## Артефакт и ограничения
 
-Установщик: `.scratch/quick-read-dist/Glagol_0.6.1_x64-setup.exe`, 10 376 668 байт.
-SHA-256: `49f7886ef3d4fce5714c217b931e162bde9efaffb374bea9f978029c6f312d1f`.
+Установщик: `.scratch/quick-read-dist/Glagol_0.6.1_x64-setup.exe`, 10 394 706 байт.
+SHA-256: `0a1c8a3efa074c98e847328d5aa045d3fac3fe45dfa3698783219e38dcf3593a`.
 Рядом `SHA256SUMS` и `build.json` с привязкой к исходникам. Сборка не подписана
 для updater, не установлена и не опубликована. Тестовая EXE обновлена и запущена.
 

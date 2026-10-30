@@ -21,13 +21,27 @@ pub struct Bindings {
 pub fn setup(app: &tauri::AppHandle) -> Result<(), String> {
     let q = app.state::<QuickRead>();
     let state = app.state::<AppState>();
-    let db = state.db.lock().map_err(|e| e.to_string())?;
-    let dictation = startup_hotkey(&db);
-    let mut bindings = q.shortcuts.lock().unwrap();
-    for (action, default) in DEFAULTS {
-        let raw = repository::get_setting(&db, &format!("quick_read_{action}"))
-            .map_err(|e| e.to_string())?
-            .unwrap_or(default.into());
+    // The plugin registers on the UI thread. Retaining DB/bindings guards here
+    // would deadlock if an initial webview IPC is waiting for either mutex.
+    let (dictation, keys, speed) = {
+        let db = state.db.lock().map_err(|e| e.to_string())?;
+        let mut keys = Vec::new();
+        for (action, default) in DEFAULTS {
+            let raw = repository::get_setting(&db, &format!("quick_read_{action}"))
+                .map_err(|e| e.to_string())?
+                .unwrap_or(default.into());
+            keys.push((action, raw));
+        }
+        let speed = repository::get_setting(&db, "quick_read_speed")
+            .ok()
+            .flatten()
+            .and_then(|s| s.parse::<f64>().ok())
+            .filter(|n| n.is_finite() && (0.5..=2.0).contains(n))
+            .unwrap_or(1.0);
+        (startup_hotkey(&db), keys, speed)
+    };
+    let mut bindings = Bindings::default();
+    for (action, raw) in keys {
         let Ok(shortcut) = validate(&raw) else {
             bindings.errors.push(format!("{action}: {raw}"));
             continue;
@@ -41,12 +55,7 @@ pub fn setup(app: &tauri::AppHandle) -> Result<(), String> {
             bindings.registered.insert(action.into(), shortcut);
         }
     }
-    let speed = repository::get_setting(&db, "quick_read_speed")
-        .ok()
-        .flatten()
-        .and_then(|s| s.parse::<f64>().ok())
-        .filter(|n| n.is_finite() && (0.5..=2.0).contains(n))
-        .unwrap_or(1.0);
+    *q.shortcuts.lock().unwrap() = bindings;
     q.buffer.lock().unwrap().snapshot.speed = speed;
     Ok(())
 }

@@ -39,6 +39,7 @@ pub fn moonshine_worker_entry() -> Option<i32> {
     stt::moonshine::child_entry()
 }
 pub mod preferences;
+pub mod startup;
 pub mod state;
 
 // Dictation microphone recorder (Sprint 6 PR2): capture → 16 kHz mono S16LE.
@@ -99,17 +100,24 @@ impl dictation::pipeline::DictationEmitter for tauri::AppHandle {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     let startup_metrics = commands::metrics::StartupMetrics::new();
+    let launch_mode = startup::LaunchMode::from_args(std::env::args_os());
     tauri::Builder::default()
+        .manage(startup::PendingShow::default())
         // Single-instance lock (v0.2.1). MUST be registered FIRST so it runs
         // before `global-shortcut` (and every other plugin) can act: a second
         // launch has to be intercepted *before* it tries to grab the process-
         // global hotkey, or it steals the combo from the copy the user is
         // already using. The callback runs inside the ORIGINAL, already-running
-        // process (the second one exits) — so it brings the existing window
-        // forward from the tray rather than starting anything new (D2). argv/cwd
-        // are unused: Glagol takes no file arguments.
-        .plugin(tauri_plugin_single_instance::init(|app, _argv, _cwd| {
-            dictation::session::show_main_window(app);
+        // process (the second one exits). A normal repeat opens the window;
+        // an explicit tray/login repeat leaves visibility and focus untouched.
+        .plugin(tauri_plugin_single_instance::init(|app, argv, _cwd| {
+            if startup::LaunchMode::from_args(argv.into_iter().map(Into::into)).show_existing() {
+                if app.get_webview_window("main").is_some() {
+                    dictation::session::show_main_window(app);
+                } else {
+                    app.state::<startup::PendingShow>().request();
+                }
+            }
         }))
         .plugin(tauri_plugin_opener::init())
         // In-app updates (0.6.0): used from Rust commands only, no webview permissions.
@@ -139,6 +147,7 @@ pub fn run() {
             // returned WorkerGuard must outlive the process or the rolling-file
             // writer stops flushing (D-L4) — it is parked in AppState below.
             let log_guard = crate::logging::init_tracing(app.handle());
+            tracing::info!("application setup started");
             app.manage(startup_metrics);
 
             // Resolve the database path and eagerly initialise the connection.
@@ -149,6 +158,7 @@ pub fn run() {
             let conn = crate::db::init_database(&db_path)?;
             preferences::initialize(&conn, existing_database)?;
             preferences::activate(preferences::get(&conn)?.ui_language);
+            tracing::info!("startup database ready");
 
             // Ensure the audio cache directory exists. Synthesis writes
             // straight into it without a per-call mkdir, so the directory
@@ -198,51 +208,29 @@ pub fn run() {
 
             // Park the log-flush guard for the process lifetime (D-L4).
             app.state::<state::AppState>().set_log_guard(log_guard);
+            tracing::info!("startup backend ready");
 
-            // ── Dictation surface (Sprint 6 PR3) ──────────────────────────
-            //
-            // Create the overlay window once, hidden (D5), and rebuild it after
-            // the system resumes from sleep (WebView2 can stop rendering it).
-            dictation::session::build_overlay(app.handle(), dictation::session::OVERLAY_LABEL)?;
-            dictation::session::spawn_resume_watch(app.handle().clone());
-
-            // System tray with the idle icon + «Показать / Выход» menu (D11).
-            dictation::session::build_tray(app.handle())?;
-
-            // Register the global push-to-talk hotkey (D3/D7). Prefer the user's
-            // saved hotkey (falls back to the default if unset or unparseable) so
-            // a hotkey changed via Settings persists across restarts. A failure
-            // here (some other app already owns the combo) is logged, not fatal —
-            // the rest of Glagol (TTS) must still run.
-            let hotkey = {
-                let state = app.state::<state::AppState>();
-                let conn = state
-                    .db
-                    .lock()
-                    .expect("db mutex poisoned during startup hotkey read");
-                commands::dictation::startup_hotkey(&conn)
-            };
-            if let Err(e) = app.global_shortcut().register(hotkey) {
-                tracing::warn!("failed to register dictation hotkey {hotkey:?}: {e}");
-            }
-
-            quick_read::setup(app.handle())?;
-
-            // Close-to-tray (D12): intercept the main window's close so the
-            // hotkey keeps working after the user "closes" the window.
-            if let Some(main) = app.get_webview_window("main") {
+            #[cfg(windows)]
+            {
                 let handle = app.handle().clone();
-                main.on_window_event(move |event| {
-                    if let WindowEvent::CloseRequested { api, .. } = event {
-                        api.prevent_close();
-                        dictation::session::hide_main_to_tray(&handle);
-                    }
-                });
+                std::thread::Builder::new()
+                    .name("desktop-startup".into())
+                    .spawn(move || {
+                        if let Err(error) = finish_desktop_setup(&handle, launch_mode) {
+                            tracing::error!(%error, "desktop initialization failed");
+                            handle.exit(1);
+                        }
+                    })?;
             }
+            #[cfg(not(windows))]
+            finish_desktop_setup(app.handle(), launch_mode)?;
 
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
+            startup::get_startup_settings,
+            startup::set_launch_at_login,
+            startup::set_start_in_tray,
             quick_read::quick_read_action,
             quick_read::quick_read_state,
             quick_read::quick_read_speed,
@@ -317,4 +305,81 @@ pub fn run() {
                 models.en.stop();
             }
         });
+}
+
+// Windows WebView2 creation must run while the UI event loop can dispatch COM
+// callbacks. A hidden first webview must not hold the synchronous setup hook.
+fn finish_desktop_setup(
+    app: &tauri::AppHandle,
+    launch_mode: startup::LaunchMode,
+) -> Result<(), Box<dyn std::error::Error>> {
+    // Construct the ordinary main webview first, while the UI loop is running.
+    // It remains hidden/unfocused until native services and surfaces are ready.
+    let saved_tray = {
+        let state = app.state::<state::AppState>();
+        let db = state
+            .db
+            .lock()
+            .map_err(|_| "startup preference lock failed")?;
+        startup::start_in_tray(&db)?
+    };
+    let config = app
+        .config()
+        .app
+        .windows
+        .iter()
+        .find(|w| w.label == "main")
+        .ok_or("main window configuration missing")?;
+    let main = tauri::WebviewWindowBuilder::from_config(app, config)?
+        .visible(false)
+        .focused(false)
+        .build()?;
+    let handle = app.clone();
+    main.on_window_event(move |event| {
+        if let WindowEvent::CloseRequested { api, .. } = event {
+            api.prevent_close();
+            dictation::session::hide_main_to_tray(&handle);
+        }
+    });
+    tracing::info!("startup main created");
+    tracing::info!("startup surfaces begin");
+    // ── Dictation surface (Sprint 6 PR3) ──────────────────────────
+    //
+    // Create the overlay window once, hidden (D5), and rebuild it after
+    // the system resumes from sleep (WebView2 can stop rendering it).
+    dictation::session::build_overlay(app, dictation::session::OVERLAY_LABEL)?;
+    tracing::info!("startup dictation surface ready");
+    dictation::session::spawn_resume_watch(app.clone());
+
+    // System tray with the idle icon + «Показать / Выход» menu (D11).
+    dictation::session::build_tray(app)?;
+    tracing::info!("startup tray ready");
+
+    // Register the global push-to-talk hotkey (D3/D7). Prefer the user's
+    // saved hotkey (falls back to the default if unset or unparseable) so
+    // a hotkey changed via Settings persists across restarts. A failure
+    // here (some other app already owns the combo) is logged, not fatal —
+    // the rest of Glagol (TTS) must still run.
+    let hotkey = {
+        let state = app.state::<state::AppState>();
+        let conn = state
+            .db
+            .lock()
+            .expect("db mutex poisoned during startup hotkey read");
+        commands::dictation::startup_hotkey(&conn)
+    };
+    if let Err(e) = app.global_shortcut().register(hotkey) {
+        tracing::warn!("failed to register dictation hotkey {hotkey:?}: {e}");
+    }
+
+    tracing::info!("startup dictation shortcut ready");
+    quick_read::setup(app)?;
+    tracing::info!("startup quick-read surfaces ready");
+
+    let hidden = launch_mode.hidden(saved_tray) && !app.state::<startup::PendingShow>().take();
+    if !hidden {
+        dictation::session::show_main_window(app);
+    }
+    tracing::info!(main_hidden = hidden, "startup visibility applied");
+    Ok(())
 }

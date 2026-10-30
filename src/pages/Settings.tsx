@@ -6,7 +6,8 @@ import { QuickReadSection } from "@/components/settings/QuickReadSection";
 import { TtsSection } from "@/components/settings/TtsSection";
 import { UpdatesSection } from "@/components/settings/UpdatesSection";
 import { LanguageSwitch } from "@/components/LanguageSwitch";
+import { StartupSection } from "@/components/settings/StartupSection";
 export function Settings() {
   useI18n();
-  return <div className="space-y-6"><div><h2 className="text-2xl font-semibold tracking-tight">{t("Settings")}</h2><p className="mt-1 text-sm text-muted-foreground">{t("Dictation and text to speech are configured independently.")}</p></div><LanguageSwitch /><DictationSection /><TtsSection /><QuickReadSection /><BackupSection /><UpdatesSection /></div>;
+  return <div className="space-y-6"><div><h2 className="text-2xl font-semibold tracking-tight">{t("Settings")}</h2><p className="mt-1 text-sm text-muted-foreground">{t("Dictation and text to speech are configured independently.")}</p></div><LanguageSwitch /><StartupSection /><DictationSection /><TtsSection /><QuickReadSection /><BackupSection /><UpdatesSection /></div>;
 }
