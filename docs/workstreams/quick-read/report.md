@@ -1,7 +1,7 @@
 # Quick Read — локальный результат 2026-10-30
 
 Ветка `feat/quick-read`; фонетика local `91a2d99`, запуск local `aaa6b34`,
-Notepad++ local `0135dfd`; скрытие мини-плеера M выполнено поверх этого baseline.
+Notepad++ local `0135dfd`; скрытие мини-плеера — local `fc44db3`.
 Это исходники 0.6.1 + Quick Read, не опубликованный релиз v0.6.1.
 Установка и публикация не выполнялись.
 
@@ -38,7 +38,8 @@ Windows 11 build 26200.9711, Rust/MSVC 1.99.1; frontend WSL Node24.13.0/pnpm12.1
   8 ignored (ignored не выдаются за выполненные).
 - TypeScript, 290 i18n keys и Vite production build (3m53s): PASS. Осталось обычное
   предупреждение размера JS bundle >500kB; гейты не ослаблены.
-- Python adapter: 11 tests PASS. Native RU mixed PCM, фонетика on/off,
+- Ранее, 2026-10-29 (в M не повторялись): Python adapter 11 tests PASS.
+  Native RU mixed PCM, фонетика on/off,
   PCM↔WAV/cancel/recovery: PASS. Native EN four voices/library WAV/recovery: PASS.
 - Гейты: 49 runbook tests, 3 i18n tests и runbook-check 14 series: PASS.
 - NSIS через Tauri CLI: PASS (release43.64s). Обновлённая direct-run EXE
@@ -78,7 +79,7 @@ UTF-16 slice. Не меняет clipboard/фокус/выделение, не и
 ## Артефакт и ограничения
 
 Установщик M: `.scratch/quick-read-dist/Glagol_0.6.1_x64-setup.exe`,
-10,404,735 байт; SHA-256 `cf92cc655d3a2719365bcc42bdfa0b6eadbc7154b5cab8421e761a95c2e179d7`.
+10 404 735 байт; SHA-256 `cf92cc655d3a2719365bcc42bdfa0b6eadbc7154b5cab8421e761a95c2e179d7`.
 Собран 2026-10-30T09:27:04.029932+00:00; frontend/NSIS и ручная проверка крестика PASS.
 Рядом `SHA256SUMS` и `build.json` с привязкой к исходникам. Сборка не подписана
 для updater, не установлена и не опубликована. Тестовая EXE обновлена и запущена.

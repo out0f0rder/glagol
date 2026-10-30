@@ -206,3 +206,7 @@ M required fmt/clippy/test, TSC/frontend, NSIS и context PASS; claim очище
 ## 2026-10-30T09:29:42.735Z — финальный гейт контекста PASS
 
 После исправления дат context:refresh exit0, runbook:check exit0 «runbook-check OK (14 series)», git diff --check exit0. Дополнительных исходниковых изменений после NSIS нет. Локальный M commit включает код/регрессии, EN/RU инструкции и фактическую ручную приёмку; NEXT O сохраняется pending по решению пользователя.
+
+## 2026-10-30T09:30:28.472Z — привязка доставки к local commit
+
+M сохранён local fc44db39d4cf32633e95376cf0b5a814ea28c879, N local0135dfd, L localaaa6b34; все достижимы на feat/quick-read. После M commit дерево было чистым. SHA256/размер готового NSIS повторно сверены с build.json; QA EXE byte hash совпадает с CLI release EXE. build.json.source_commit теперь fc44db39d4cf32633e95376cf0b5a814ea28c879; последующие изменения только контекст/отчёт, не требуют пересборки. Structured local ref добавлен в project.json. Ранее выполненные native/Python TTS тесты в отчёте явно датированы 2026-10-29; в M не повторялись, текущий полный cargo test368PASS включает две новые регрессии. Пользовательский текст не записывался. NEXT O pending/deferred; установка, публикация, вход Windows и несколько мониторов не выполнялись.

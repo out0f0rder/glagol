@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "observed_at": "2026-10-30T09:29:13.334Z",
+  "observed_at": "2026-10-30T09:30:28.472Z",
   "active_workstream": "quick-read",
   "links": [
     "AGENTS.md",
@@ -121,8 +121,8 @@
       "id": "quick-read-local-build",
       "label": "Quick Read — локальный кандидат",
       "status": "observed",
-      "summary": "Исходники0.6.1 + Quick Read, фонетика, автозапуск/трей, Notepad++ fallback и hide мини-плеера; M поверх local0135dfd до commit. NSIS 10404735байт,SHA256 cf92cc655d3a2719365bcc42bdfa0b6eadbc7154b5cab8421e761a95c2e179d7;368Rust tests,fmt/clippy,TSC/Vite290keys,49runbook/3i18n PASS. QA EXE PID9020 готова в трее; не установлен/опубликован. Offline/multi-monitor NOT_RUN.",
-      "observed_at": "2026-10-30T09:29:13.334Z",
+      "summary": "Исходники0.6.1 + Quick Read, фонетика, автозапуск/трей, Notepad++ fallback и hide мини-плеера; local fc44db3. NSIS 10404735байт,SHA256 cf92cc655d3a2719365bcc42bdfa0b6eadbc7154b5cab8421e761a95c2e179d7;368Rust tests,fmt/clippy,TSC/Vite290keys,49runbook/3i18n PASS. QA EXE PID9020 готова в трее; не установлен/опубликован. Offline/multi-monitor NOT_RUN.",
+      "observed_at": "2026-10-30T09:30:28.472Z",
       "source": "docs/workstreams/quick-read/log.md"
     },
     {
@@ -219,6 +219,11 @@
     {
       "id": "quick-read-scintilla",
       "sha": "0135dfd",
+      "scope": "local"
+    },
+    {
+      "id": "quick-read-hide-player",
+      "sha": "fc44db39d4cf32633e95376cf0b5a814ea28c879",
       "scope": "local"
     }
   ]
